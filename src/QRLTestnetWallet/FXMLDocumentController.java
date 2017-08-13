@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+// Put in license header?
 package QRLTestnetWallet;
 
 import java.net.URL;
@@ -33,52 +29,37 @@ import static QRLTestnetWallet.ContactQRL.sendQRL;
  */
 public class FXMLDocumentController implements Initializable {
 
+    //PERMANENT GUI
     @FXML
     private ImageView btn_exit;
+    
+    //SIDE MENU
     @FXML
-    private JFXButton walletButton;
-    @FXML
-    private JFXButton sendButton;
-    @FXML
-    private JFXButton transactionsButton;
-    @FXML
-    private JFXButton aboutButton;
-    @FXML
-    private JFXButton exitButton;
-    @FXML
-    private TextField walletAddress;
-    @FXML
-    private TextField txidArea;
-    @FXML
-    private Label msgArea;
-    @FXML
-    private JFXTextField sendField;
-    @FXML
-    private JFXTextField amountField;
-    @FXML
-    private Label walletBalance;
-    @FXML
-    private Label versionLabel;
-    @FXML
-    private Label uptimeLabel;
-    @FXML
-    private Label nodesLabel;
-    @FXML
-    private Label stakingLabel;
-    @FXML
-    private Label syncLabel;
-    @FXML
-    private Label sendResponse;
-    @FXML
-    private Label txidLabel;
-    @FXML
-    private Label msgLabel;
+    private JFXButton walletButton, sendButton, transactionsButton, aboutButton, exitButton;
+    
+    //WALLET PANE
     @FXML
     private AnchorPane walletPane;
     @FXML
+    private TextField walletAddress;
+    @FXML
+    private Label walletBalance, versionLabel, uptimeLabel, nodesLabel, stakingLabel, syncLabel;
+
+    //SEND PANE
+    @FXML
     private AnchorPane sendPane;
     @FXML
+    private JFXTextField sendField, amountField;
+    @FXML
+    private TextField txidArea;
+    @FXML
+    private Label msgLabel,txidLabel, msgArea;
+    
+    //TRANSACTION PANE
+    @FXML
     private AnchorPane transactionPane;
+    
+    //ABOUT PANE
     @FXML
     private AnchorPane aboutPane;
 
@@ -97,6 +78,8 @@ public class FXMLDocumentController implements Initializable {
         btn_exit.setImage(new Image("close.png"));
     }
 
+    //This will need to be updated automatically instead of only a the beginning
+    //of the program.
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         walletAddress.setText(getAddress());
@@ -111,63 +94,30 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void walletClicked(MouseEvent event) {
-        setColour(walletButton);
-        resetColour(sendButton);
-        resetColour(transactionsButton);
-        resetColour(aboutButton);
-        resetColour(exitButton);
-        walletPane.setVisible(true);
-        sendPane.setVisible(false);
-        transactionPane.setVisible(false);
-        aboutPane.setVisible(false);
+        changeMenuColours(walletButton);
+        changePane(walletPane);
     }
 
     @FXML
     private void sendClicked(MouseEvent event) {
-        resetColour(walletButton);
-        setColour(sendButton);
-        resetColour(transactionsButton);
-        resetColour(aboutButton);
-        resetColour(exitButton);
-        walletPane.setVisible(false);
-        sendPane.setVisible(true);
-        transactionPane.setVisible(false);
-        aboutPane.setVisible(false);
+        changeMenuColours(sendButton);
+        changePane(sendPane);
     }
 
     @FXML
     private void transactionsClicked(MouseEvent event) {
-        resetColour(walletButton);
-        resetColour(sendButton);
-        setColour(transactionsButton);
-        resetColour(aboutButton);
-        resetColour(exitButton);
-        walletPane.setVisible(false);
-        sendPane.setVisible(false);
-        transactionPane.setVisible(true);
-        aboutPane.setVisible(false);
+        changeMenuColours(transactionsButton);
+        changePane(transactionPane);
     }
 
     @FXML
     private void aboutClicked(MouseEvent event) {
-        resetColour(walletButton);
-        resetColour(sendButton);
-        resetColour(transactionsButton);
-        setColour(aboutButton);
-        resetColour(exitButton);
-        walletPane.setVisible(false);
-        sendPane.setVisible(false);
-        transactionPane.setVisible(false);
-        aboutPane.setVisible(true);
+        changeMenuColours(aboutButton);
+        changePane(aboutPane);
     }
 
     @FXML
     private void exitClicked(MouseEvent event) {
-        resetColour(walletButton);
-        resetColour(sendButton);
-        resetColour(transactionsButton);
-        resetColour(aboutButton);
-        setColour(exitButton);
         System.exit(-1);
     }
 
@@ -184,6 +134,25 @@ public class FXMLDocumentController implements Initializable {
         msgLabel.setVisible(true);
         txidArea.setText(responses[1]);
         msgArea.setText(responses[3]);
+    }
+    
+    @FXML 
+    void changeMenuColours(JFXButton button) {
+        resetColour(walletButton);
+        resetColour(sendButton);
+        resetColour(transactionsButton);
+        resetColour(aboutButton);
+        resetColour(exitButton);
+        setColour(button);
+    }
+    
+    @FXML
+    void changePane(AnchorPane pane) {
+        walletPane.setVisible(false);
+        sendPane.setVisible(false);
+        transactionPane.setVisible(false);
+        aboutPane.setVisible(false);
+        pane.setVisible(true);
     }
 
     @FXML
