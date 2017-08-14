@@ -52,10 +52,10 @@ public class QRLWallet extends Application {
     }
     
     public static void main(String[] args) {
+        launch(args);
         ContactQRL.connect();
         String thingInfo[] = ContactQRL.getWalletBalance();
         ContactQRL.getInfo();
-        launch(args);
     }
 
     public String[] sendQRL(String fromAddress, String toAddress, String amount) {
