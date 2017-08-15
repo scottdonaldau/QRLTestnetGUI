@@ -31,7 +31,7 @@
             </Label>
             <TextField fx:id="walletAddress" editable="false" focusTraversable="false" layoutX="25.0" layoutY="81.0" prefHeight="25.0" prefWidth="439.0">
                <font>
-                  <Font size="10.0" />
+                  <Font size="11.6" />
                </font></TextField>
             <Label fx:id="versionLabel" layoutX="216.0" layoutY="336.0" text="t">
                <font>
