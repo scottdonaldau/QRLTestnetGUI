@@ -46,7 +46,29 @@ public class ContactQRL {
     }
 
     public static String getUptime() {
-        return uptime;
+        double timed = Double.parseDouble(uptime);
+        int time = (int) timed;
+        
+        int hours = time / 3600;
+        int secondsLeft = time - hours * 3600;
+        int minutes = secondsLeft / 60;
+        int seconds = secondsLeft - minutes * 60;
+
+        String formattedTime = "";
+
+        if(hours != 0) {
+            formattedTime += hours + " hrs ";
+        } 
+        
+        if(minutes != 0) {
+            formattedTime += minutes + " mins ";
+        }
+        
+        if(seconds !=0) {
+            formattedTime += seconds + " seconds";
+        }
+
+        return formattedTime;
     }
 
     public static String getNodes() {
@@ -120,7 +142,7 @@ public class ContactQRL {
         String sendResponse = "";
         sendResponse = contactNode(query);
         String[] responses = sendResponse.split(">>>");
-        
+
         return responses;
     }
 
