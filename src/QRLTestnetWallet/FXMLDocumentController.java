@@ -75,7 +75,7 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void handleButtonAction3(MouseEvent event) {
-        btn_exit.setImage(new Image("close.png"));
+        btn_exit.setImage(new Image("exit.png"));
     }
 
     //This will need to be updated automatically instead of only a the beginning
