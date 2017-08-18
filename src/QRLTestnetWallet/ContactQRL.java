@@ -74,11 +74,13 @@ public class ContactQRL {
         return sync;
     }
 
-    public static void getInfo() {
+    public static boolean getInfo() {
         String rawInfo = "";
-        while (!rawInfo.contains("Version")) {
-            rawInfo = contactNode("getinfo");
-        }
+        
+        rawInfo = contactNode("getinfo");
+        if(!rawInfo.contains("Version")) {
+                return false;
+            }
 
         String[] tempInfos = rawInfo.split(">>>");
         String infoss = "";
@@ -88,7 +90,6 @@ public class ContactQRL {
                 infoss += s2[1];
                 infoss += "&";
             } catch (IndexOutOfBoundsException e) {
-                //System.out.println(e);
             }
         }
 
@@ -102,14 +103,16 @@ public class ContactQRL {
         } catch (Exception e) {
 
         }
+        return true;
     }
 
-    public static String[] getWalletBalance() {
+    public static boolean getWalletBalance() {
         String rawBalance = "";
 
-        while (!rawBalance.contains("balance")) {
-            rawBalance = contactNode("wallet");
-        }
+        rawBalance = contactNode("wallet");
+            if(!rawBalance.contains("balance")) {
+                return false;
+            }
 
         if (rawBalance != "") {
             try {
@@ -118,14 +121,11 @@ public class ContactQRL {
 
                 address = walletAddress;
                 balance = walletBalance;
-
-                return new String[]{address, balance};
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return null;
+        return true;
     }
 
     public static String[] sendQRL(String fromAddress, String toAddress, String amount) {
@@ -150,7 +150,7 @@ public class ContactQRL {
     public static String contactNode(String command) {
         String response = "";
         try {
-            qrlSocket.setSoTimeout(250);
+            qrlSocket.setSoTimeout(25);
             out.println(command);
 
             while (!in.ready()) {

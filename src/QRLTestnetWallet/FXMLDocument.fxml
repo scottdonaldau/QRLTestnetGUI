@@ -183,7 +183,7 @@
       </Pane>
       <ImageView fx:id="btn_exit" layoutX="665.0" layoutY="8.0" onMouseClicked="#handleButtonAction" onMouseEntered="#handleButtonAction2" onMouseExited="#handleButtonAction3" pickOnBounds="true">
          <image>
-            <Image url="@../images/close.png" />
+            <Image url="@../close.png" />
          </image>
       </ImageView>
       <AnchorPane fx:id="aboutPane" layoutX="200.0" layoutY="4.0" prefHeight="500.0" prefWidth="465.0" visible="false">

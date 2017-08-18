@@ -6,32 +6,35 @@
 package QRLTestnetWallet;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle; 
+import javafx.stage.StageStyle;
 
 /**
  *
  * @author Aidan
  */
 public class QRLWallet extends Application {
-    
+
     private double xOffset = 0;
     private double yOffset = 0;
-      
+
+    Boolean searching = false;
+
     @Override
     public void start(Stage stage) throws Exception {
-        
-        
+        startTask();
+
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         stage.initStyle(StageStyle.UNDECORATED);
         Scene scene = new Scene(root);
 
-         root.setOnMousePressed(new EventHandler<MouseEvent>() {
+        root.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 xOffset = event.getSceneX();
@@ -46,15 +49,47 @@ public class QRLWallet extends Application {
                 stage.setY(event.getScreenY() - yOffset);
             }
         });
-        
+
         stage.setScene(scene);
         stage.show();
     }
-    
+
+    public void startTask() {
+        Runnable task = new Runnable() {
+            public void run() {
+                runTask();
+            }
+        };
+
+        Thread backgroundThread = new Thread(task);
+        backgroundThread.setDaemon(true);
+        backgroundThread.start();
+    }
+
+    public void runTask() {
+        while (true) {
+            try {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (searching) {
+                            ContactQRL.getWalletBalance();
+                            searching = false;
+                        } else {
+                            ContactQRL.getInfo();
+                            searching = true;
+                        }
+                    }
+                });
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public static void main(String[] args) {
         ContactQRL.connect();
-        String thingInfo[] = ContactQRL.getWalletBalance();
-        ContactQRL.getInfo();
         launch(args);
     }
 

@@ -22,6 +22,12 @@ import static QRLTestnetWallet.ContactQRL.getNodes;
 import static QRLTestnetWallet.ContactQRL.getStaking;
 import static QRLTestnetWallet.ContactQRL.getSync;
 import static QRLTestnetWallet.ContactQRL.sendQRL;
+import javafx.application.Platform;
+
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 
 /**
  *
@@ -32,11 +38,11 @@ public class FXMLDocumentController implements Initializable {
     //PERMANENT GUI
     @FXML
     private ImageView btn_exit;
-    
+
     //SIDE MENU
     @FXML
     private JFXButton walletButton, sendButton, transactionsButton, aboutButton, exitButton;
-    
+
     //WALLET PANE
     @FXML
     private AnchorPane walletPane;
@@ -53,15 +59,16 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private TextField txidArea;
     @FXML
-    private Label msgLabel,txidLabel, msgArea;
-    
+    private Label msgLabel, txidLabel, msgArea;
+
     //TRANSACTION PANE
     @FXML
     private AnchorPane transactionPane;
-    
+
     //ABOUT PANE
     @FXML
     private AnchorPane aboutPane;
+    private Service<Void> backgroundThread;
 
     @FXML
     private void handleButtonAction(MouseEvent event) {
@@ -75,21 +82,59 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void handleButtonAction3(MouseEvent event) {
-        btn_exit.setImage(new Image("exit.png"));
+        btn_exit.setImage(new Image("close.png"));
     }
 
-    //This will need to be updated automatically instead of only a the beginning
-    //of the program.
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        walletAddress.setText(getAddress());
-        walletBalance.setText(getBalance());
 
-        versionLabel.setText(getVersion());
-        uptimeLabel.setText(getUptime());
-        nodesLabel.setText(getNodes());
-        stakingLabel.setText(getStaking());
-        syncLabel.setText(getSync());
+        backgroundThread = new Service<Void>() {
+            @Override
+            protected Task<Void> createTask() {
+                return new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        while (true) {
+                            Platform.runLater(() -> {
+                                try {
+                                    
+                                    walletAddress.setText(getAddress());
+                                    versionLabel.setText(getVersion());
+                                    uptimeLabel.setText(getUptime());
+                                    nodesLabel.setText(getNodes());
+                                    stakingLabel.setText(getStaking());
+                                    syncLabel.setText(getSync());
+                                    walletBalance.setText(getBalance());
+                                } catch (Exception e) {
+
+                                }
+                            });
+                           Thread.sleep(1000);
+                        }
+                    }
+
+                };
+            }
+        };
+
+        backgroundThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+
+            @Override
+            public void handle(WorkerStateEvent event) {
+                System.out.println("done");
+            }
+        });
+        backgroundThread.restart();
+    }
+    
+    private static class FirstLineService extends Service<String> {
+
+        @Override
+        protected Task<String> createTask() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+    
     }
 
     @FXML
@@ -135,8 +180,8 @@ public class FXMLDocumentController implements Initializable {
         txidArea.setText(responses[1]);
         msgArea.setText(responses[3]);
     }
-    
-    @FXML 
+
+    @FXML
     void changeMenuColours(JFXButton button) {
         resetColour(walletButton);
         resetColour(sendButton);
@@ -145,7 +190,7 @@ public class FXMLDocumentController implements Initializable {
         resetColour(exitButton);
         setColour(button);
     }
-    
+
     @FXML
     void changePane(AnchorPane pane) {
         walletPane.setVisible(false);
