@@ -38,7 +38,6 @@ public class ContactNode {
         } catch (IOException ex) {
             System.out.println("ERROR CONNECTING TO NODE");
             ex.printStackTrace();
-            Logger.getLogger(test.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception e) {
             System.out.println("ANOTHER ERROR");
             e.printStackTrace();

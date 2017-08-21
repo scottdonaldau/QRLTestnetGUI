@@ -318,7 +318,7 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     void setColour(JFXButton button) {
         button.setStyle("");
-        button.setStyle("-fx-background-color: #556DB5");
+        button.setStyle("-fx-background-color: #4a5474");
     }
 
     @FXML
