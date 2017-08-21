@@ -6,11 +6,11 @@
 package QRLTestnetWallet;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -28,7 +28,7 @@ public class QRLWallet extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        startTask();
+        //startTask();
 
         Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         stage.initStyle(StageStyle.UNDECORATED);
@@ -49,11 +49,11 @@ public class QRLWallet extends Application {
                 stage.setY(event.getScreenY() - yOffset);
             }
         });
-
+        stage.getIcons().add(new Image("icon.png"));
         stage.setScene(scene);
         stage.show();
     }
-
+    /*
     public void startTask() {
         Runnable task = new Runnable() {
             public void run() {
@@ -87,15 +87,16 @@ public class QRLWallet extends Application {
             }
         }
     }
-
+    */
     public static void main(String[] args) {
-        ContactQRL.connect();
-        launch(args);
+        //ContactQRL.connect();
+        Application.launch(args);
     }
-
+    /*
     public String[] sendQRL(String fromAddress, String toAddress, String amount) {
         String[] sendQRL;
         sendQRL = ContactQRL.sendQRL(fromAddress, toAddress, amount);
         return sendQRL;
     }
+*/
 }
