@@ -224,11 +224,26 @@ public class FXMLDocumentController implements Initializable {
         return new Task<Void>() {
             @Override
             public Void call() throws Exception {
+                String fromAddress = "0";
+                String sendAddress = sendField.getText();
+                String sendAmount = amountField.getText();
+                /*
                 System.out.println("DOING WHAAAT");
                 for (int count = 1; count <= 5; count++) {
                     Thread.sleep(1000);
                     updateMessage("Task " + taskNumber + ": Count " + count);
                 }
+                 */
+                String[] responses = newNode.sendQRL(fromAddress, sendAddress, sendAmount);
+                Platform.runLater(() -> {
+                    txidArea.setVisible(true);
+                    msgArea.setVisible(true);
+                    txidLabel.setVisible(true);
+                    msgLabel.setVisible(true);
+                    txidArea.setText(responses[1]);
+                    msgArea.setText(responses[3]);
+                });
+
                 return null;
             }
         };
@@ -261,6 +276,7 @@ public class FXMLDocumentController implements Initializable {
             //String[] responses;
             Task<Void> task = sendQRLTask();
             // add text to text area if task's message changes:
+            /*
             task.messageProperty().addListener((obs, oldMessage, newMessage) -> {
                 System.out.println("SENDING QRL HOPEFULLY");
                 String[] responses = newNode.sendQRL(fromAddress, sendAddress, sendAmount);
@@ -271,7 +287,7 @@ public class FXMLDocumentController implements Initializable {
                 txidArea.setText(responses[1]);
                 msgArea.setText(responses[3]);
             });
-
+             */
             task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
                 @Override
                 public void handle(WorkerStateEvent taskEvent) {

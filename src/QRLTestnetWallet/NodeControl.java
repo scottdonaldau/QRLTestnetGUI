@@ -34,18 +34,18 @@ public class NodeControl {
         node = new ContactNode();
     }
 
-    public JsonObject sendCommandObject(String command) {
-        JsonObject objResponse = node.sendCommandAndGetJsonObject(command);
+    public JsonObject sendCommandObject(String command, int timeout) {
+        JsonObject objResponse = node.sendCommandAndGetJsonObject(command, timeout);
         return objResponse;
     }
 
-    public JsonArray sendCommandArray(String command, String nested) {
-        JsonArray arrayResponse = node.sendCommandAndGetJsonArray(command, nested);
+    public JsonArray sendCommandArray(String command, String nested, int timeout) {
+        JsonArray arrayResponse = node.sendCommandAndGetJsonArray(command, nested, timeout);
         return arrayResponse;
     }
 
     public void updateInfo() {
-        JsonObject updateResponse = sendCommandObject("json getinfo");
+        JsonObject updateResponse = sendCommandObject("json getinfo", 50);
 
         if (updateResponse != null) {
             //String test = updateResponse.asString();
@@ -63,7 +63,7 @@ public class NodeControl {
 
     //Update to allow for multiple addresses
     public void updateWallet(String nested) {
-        JsonArray arrayResponse = sendCommandArray("json wallet", nested);
+        JsonArray arrayResponse = sendCommandArray("json wallet", nested, 50);
         if (arrayResponse != null) {
             JsonObject firstAddress = arrayResponse.get(0).asObject();
 
@@ -77,7 +77,7 @@ public class NodeControl {
     }
 
     public void updateWallet() {
-        JsonArray arrayResponse = sendCommandArray("json wallet", "list_addresses");
+        JsonArray arrayResponse = sendCommandArray("json wallet", "list_addresses", 50);
         if (arrayResponse != null) {
             JsonObject firstAddress = arrayResponse.get(0).asObject();
 
@@ -91,11 +91,12 @@ public class NodeControl {
     public String[] sendQRL(String fromAddress, String toAddress, String amount) {
         
         String query = "json send " + fromAddress + " " + toAddress + " " + amount;
-        JsonObject sendResponse = sendCommandObject(query);
+        JsonObject sendResponse = sendCommandObject(query, 1000);
 
         String stringResponse = sendResponse.getString("message", "Undelivered...");
+        System.out.println("SERVER THING LOOK AT ME: " + stringResponse);
         String[] responses = stringResponse.split(">>>");
-        
+        //System.out.println();
         
         return responses;
     }

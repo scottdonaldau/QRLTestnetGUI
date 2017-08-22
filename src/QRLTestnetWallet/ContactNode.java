@@ -44,8 +44,10 @@ public class ContactNode {
         }
     }
 
-    public JsonObject sendCommandAndGetJsonObject(String command) {
-        String stringResponse = sendCommandAndGetString(command);
+    public JsonObject sendCommandAndGetJsonObject(String command, int timeout) {
+        String stringResponse = "";
+
+        stringResponse = sendCommandAndGetString(command, timeout);
 
         JsonObject objectResponse = null;
         try {
@@ -57,8 +59,8 @@ public class ContactNode {
         return objectResponse;
     }
 
-    public JsonArray sendCommandAndGetJsonArray(String command, String nestedContent) {
-        String stringResponse = sendCommandAndGetString(command);
+    public JsonArray sendCommandAndGetJsonArray(String command, String nestedContent, int timeout) {
+        String stringResponse = sendCommandAndGetString(command, timeout);
 
         JsonValue jsonResponse = null;
 
@@ -81,9 +83,11 @@ public class ContactNode {
         return null;
     }
 
-    private String sendCommandAndGetString(String command) {
+    private String sendCommandAndGetString(String command, int timeout) {
         try {
-            byte[] byteResponse = sendCommandAndGetBytes(command);
+            System.out.println("SERVER SENDING COMMAND...: " + command);
+            byte[] byteResponse = sendCommandAndGetBytes(command, timeout);
+
             String stringResponse = new String(byteResponse);
             return stringResponse;
         } catch (Exception e) {
@@ -92,9 +96,9 @@ public class ContactNode {
         return null;
     }
 
-    private byte[] sendCommandAndGetBytes(String command) {
+    private byte[] sendCommandAndGetBytes(String command, int timeout) {
         try {
-            byte[] byteResponse = retrieve(command);
+            byte[] byteResponse = retrieve(command, timeout);
             return byteResponse;
         } catch (Exception e) {
             //Error Message
@@ -102,9 +106,9 @@ public class ContactNode {
         return null;
     }
 
-    public static byte[] retrieve(String command) {
+    public static byte[] retrieve(String command, int timeout) {
         try {
-            qrlSocket.setSoTimeout(50);
+            qrlSocket.setSoTimeout(timeout);
             out.println(command);
             baos.reset();
             byte[] buffer = new byte[1024];
@@ -112,7 +116,6 @@ public class ContactNode {
             try {
                 while ((readBytes = is.read(buffer)) > 0) {
                     String tostringstuff = new String(buffer);
-                    //System.out.println("NODE RESPONSE:" + tostringstuff);
                     baos.write(buffer, 0, readBytes);
                 }
             } catch (IOException e) {
