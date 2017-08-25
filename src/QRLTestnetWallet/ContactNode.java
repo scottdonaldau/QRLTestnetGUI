@@ -108,6 +108,8 @@ public class ContactNode {
 
     public static byte[] retrieve(String command, int timeout) {
         try {
+            
+            baos.close();
             qrlSocket.setSoTimeout(timeout);
             out.println(command);
             baos.reset();

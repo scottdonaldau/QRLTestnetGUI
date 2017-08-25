@@ -7,6 +7,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXTreeTableColumn;
+import com.jfoenix.controls.JFXTreeTableView;
+import com.jfoenix.controls.RecursiveTreeItem;
+import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,11 +28,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.util.Callback;
 
 /**
  *
@@ -63,6 +75,8 @@ public class FXMLDocumentController implements Initializable {
     //TRANSACTION PANE
     @FXML
     private AnchorPane transactionPane;
+    @FXML
+    private JFXTreeTableView txTable;
 
     //ABOUT PANE
     @FXML
@@ -146,15 +160,6 @@ public class FXMLDocumentController implements Initializable {
 
     }
 
-    /*
-    private static class FirstLineService extends Service<String> {
-
-        @Override
-        protected Task<String> createTask() {
-            throw new UnsupportedOperationException("Not supported yet."); 
-        }
-    }
-     */
     @FXML
     private void walletClicked(MouseEvent event) {
         changeMenuColours(walletButton);
@@ -171,6 +176,85 @@ public class FXMLDocumentController implements Initializable {
     private void transactionsClicked(MouseEvent event) {
         changeMenuColours(transactionsButton);
         changePane(transactionPane);
+
+        JFXTreeTableColumn txTime = new JFXTreeTableColumn("Time");
+        JFXTreeTableColumn txHash = new JFXTreeTableColumn("Tx Hash");
+        JFXTreeTableColumn txTo = new JFXTreeTableColumn("To");
+        JFXTreeTableColumn txAmount = new JFXTreeTableColumn("Amount");
+        JFXTreeTableColumn txBlock = new JFXTreeTableColumn("Block");
+
+        Task<String[][]> transactionTask = getTransactionsTask();
+
+        transactionTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent taskEvent) {
+                try {
+                    String[][] transactions = transactionTask.getValue();
+
+                    ObservableList<Transaction> txList = FXCollections.observableArrayList();
+                    for (String[] s : transactions) {
+                        Transaction tempTX = new Transaction(s[0], s[1], s[2], s[3], s[4]);
+                        txList.add(tempTX);
+                    }
+
+                    JFXTreeTableColumn<Transaction, String> time = new JFXTreeTableColumn<>("Time");
+                    time.setPrefWidth(150);
+                    time.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Transaction, String>, ObservableValue<String>>() {
+                        @Override
+                        public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Transaction, String> param) {
+                            return param.getValue().getValue().timeProperty;
+                        }
+                    });
+
+                    JFXTreeTableColumn<Transaction, String> txHash = new JFXTreeTableColumn<>("TX Hash");
+                    txHash.setPrefWidth(150);
+                    txHash.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Transaction, String>, ObservableValue<String>>() {
+                        @Override
+                        public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Transaction, String> param) {
+                            return param.getValue().getValue().hashProperty;
+                        }
+                    });
+
+                    JFXTreeTableColumn<Transaction, String> to = new JFXTreeTableColumn<>("To");
+                    to.setPrefWidth(150);
+                    to.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Transaction, String>, ObservableValue<String>>() {
+                        @Override
+                        public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Transaction, String> param) {
+                            return param.getValue().getValue().toProperty;
+                        }
+                    });
+
+                    JFXTreeTableColumn<Transaction, String> amount = new JFXTreeTableColumn<>("Amount");
+                    amount.setPrefWidth(75);
+                    amount.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Transaction, String>, ObservableValue<String>>() {
+                        @Override
+                        public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Transaction, String> param) {
+                            return param.getValue().getValue().amountProperty;
+                        }
+                    });
+
+                    JFXTreeTableColumn<Transaction, String> block = new JFXTreeTableColumn<>("Block");
+                    block.setPrefWidth(50);
+                    block.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Transaction, String>, ObservableValue<String>>() {
+                        @Override
+                        public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Transaction, String> param) {
+                            return param.getValue().getValue().blockProperty;
+                        }
+                    });
+
+                    final TreeItem<Transaction> root = new RecursiveTreeItem<Transaction>(txList, RecursiveTreeObject::getChildren);
+                    txTable.getColumns().setAll(time, txHash, to, amount, block);
+                    txTable.setRoot(root);
+                    txTable.setShowRoot(false);
+
+                } catch (Exception e) {
+                    System.out.println("Issue displaying transactions list...");
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        exec.submit(transactionTask);
     }
 
     @FXML
@@ -203,6 +287,21 @@ public class FXMLDocumentController implements Initializable {
                 System.out.println("Updating Info...");
                 newNode.updateInfo();
                 return null;
+            }
+        };
+    }
+
+    private Task<String[][]> getTransactionsTask() {
+        final int taskNumber = taskCount.incrementAndGet();
+        return new Task<String[][]>() {
+            @Override
+            public String[][] call() throws Exception {
+                System.out.println("Updating Transactions...");
+                newNode.updateTransactions();
+
+                String[][] transactions = newNode.getTransactions();
+
+                return transactions;
             }
         };
     }
@@ -273,43 +372,18 @@ public class FXMLDocumentController implements Initializable {
             msgArea.setVisible(true);
             msgArea.setText(msgArea.getText() + "\nPlease enter a valid amount to send.");
         } else {
-            //String[] responses;
             Task<Void> task = sendQRLTask();
-            // add text to text area if task's message changes:
-            /*
-            task.messageProperty().addListener((obs, oldMessage, newMessage) -> {
-                System.out.println("SENDING QRL HOPEFULLY");
-                String[] responses = newNode.sendQRL(fromAddress, sendAddress, sendAmount);
-                txidArea.setVisible(true);
-                msgArea.setVisible(true);
-                txidLabel.setVisible(true);
-                msgLabel.setVisible(true);
-                txidArea.setText(responses[1]);
-                msgArea.setText(responses[3]);
-            });
-             */
+
             task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
                 @Override
                 public void handle(WorkerStateEvent taskEvent) {
-
-                    System.out.println("SENDING WORKED OMG");
-
+                    //Add here
                 }
             });
 
             exec.submit(task);
 
         }
-
-        //String[] responses = newNode.sendQRL(fromAddress, sendAddress, sendAmount);
-        /*
-        txidArea.setVisible(true);
-        msgArea.setVisible(true);
-        txidLabel.setVisible(true);
-        msgLabel.setVisible(true);
-        txidArea.setText(responses[1]);
-        msgArea.setText(responses[3]);
-         */
     }
 
     @FXML

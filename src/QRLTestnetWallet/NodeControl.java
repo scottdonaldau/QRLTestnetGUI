@@ -9,6 +9,11 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  *
@@ -22,6 +27,8 @@ public class NodeControl {
 
     static String address;
     static String balance;
+
+    public String[][] transactions;
 
     static String version;
     static String uptime;
@@ -48,9 +55,6 @@ public class NodeControl {
         JsonObject updateResponse = sendCommandObject("json getinfo", 50);
 
         if (updateResponse != null) {
-            //String test = updateResponse.asString();
-            // System.out.println("WHOLE THING: " + test);
-
             version = updateResponse.getString("version", "Unavailable");
             uptime = updateResponse.getString("uptime", "Unavailable");
             nodes = updateResponse.getString("nodes_connected", "Unavailable");
@@ -70,7 +74,6 @@ public class NodeControl {
             address = firstAddress.getString("address", "Unavailable");
             balance = firstAddress.getString("balance", "Unavailable");
         } else {
-            //if(address = )
             address = "Unavailable";
             balance = "Unavailable";
         }
@@ -88,16 +91,41 @@ public class NodeControl {
         }
     }
 
+    public void updateTransactions() {
+        JsonArray arrayResponse = sendCommandArray("json search " + address, "transactions", 200);
+        if (arrayResponse != null) {
+            ArrayList<String[]> listTransactions = new ArrayList<String[]>();
+            for (JsonValue value : arrayResponse) {
+                JsonObject object = value.asObject();
+                String[] strTransactions;
+                try {
+                    Double epochTime = object.getDouble("timestamp", 100000);
+                    
+                    Date date = new Date(epochTime.longValue() * 1000);
+                    SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.US);
+                    String txDate = format.format(date);
+                    strTransactions = new String[]{txDate, object.getString("txhash", "default"), object.getString("txto", "default"), Double.toString(object.getDouble("amount", -1.0)), Integer.toString(object.getInt("block", -1))};
+                    listTransactions.add(strTransactions);
+                } catch (Exception e) {
+                    //e.printStackTrace();
+                }
+            }
+            
+            String[][] toArray = listTransactions.toArray(new String[listTransactions.size()][]);
+            transactions = toArray;
+        } else {
+            System.out.println("Error updating transactions...");
+        }
+    }
+
     public String[] sendQRL(String fromAddress, String toAddress, String amount) {
-        
+
         String query = "json send " + fromAddress + " " + toAddress + " " + amount;
         JsonObject sendResponse = sendCommandObject(query, 1000);
 
         String stringResponse = sendResponse.getString("message", "Undelivered...");
-        System.out.println("SERVER THING LOOK AT ME: " + stringResponse);
         String[] responses = stringResponse.split(">>>");
-        //System.out.println();
-        
+
         return responses;
     }
 
@@ -168,8 +196,12 @@ public class NodeControl {
     public String getBalance() {
         return balance;
     }
-    
+
     public boolean getConnected() {
         return connected;
+    }
+
+    public String[][] getTransactions() {
+        return transactions;
     }
 }
