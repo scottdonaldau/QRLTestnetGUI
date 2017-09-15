@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane fx:id="overviewPane" prefHeight="568.0" prefWidth="831.0" style="-fx-background-color: #ecf0f1;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="Controller.OverviewController">
+   <children>
+      <Label layoutX="14.0" layoutY="136.0" text="RECENT TRANSACTIONS">
+         <font>
+            <Font name="Titillium Web SemiBold" size="25.0" />
+         </font>
+      </Label>
+      <Pane prefHeight="118.0" prefWidth="833.0" style="-fx-background-color: ffffff;">
+         <children>
+            <Label layoutX="14.0" layoutY="18.0" text="BALANCE">
+               <font>
+                  <Font name="Titillium Web Bold" size="25.0" />
+               </font>
+            </Label>
+            <Label fx:id="balanceLabel" layoutX="14.0" layoutY="56.0" text="0.00">
+               <font>
+                  <Font name="Titillium Web Regular" size="24.0" />
+               </font>
+            </Label>
+            <Label fx:id="balanceLabelQRL" layoutX="74.0" layoutY="56.0" text="QRL">
+               <font>
+                  <Font name="Titillium Web Bold" size="24.0" />
+               </font>
+            </Label>
+            <Label layoutX="515.0" layoutY="8.0" text="Spendable:">
+               <font>
+                  <Font name="Titillium Web Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label layoutX="515.0" layoutY="32.0" text="Staking:">
+               <font>
+                  <Font name="Titillium Web Regular" size="16.0" />
+               </font>
+            </Label>
+            <Label layoutX="515.0" layoutY="55.0" text="Unconfirmed:">
+               <font>
+                  <Font name="Titillium Web Regular" size="16.0" />
+               </font>
+            </Label>
+            <Label layoutX="515.0" layoutY="80.0" text="Total:">
+               <font>
+                  <Font name="Titillium Web SemiBold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="balanceSpendableLabel" layoutX="635.0" layoutY="8.0" text="0.00  QRL">
+               <font>
+                  <Font name="Titillium Web Bold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="balanceStakingLabel" layoutX="635.0" layoutY="32.0" text="0.00  QRL">
+               <font>
+                  <Font name="Titillium Web Regular" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="balanceUnconfirmedLabel" layoutX="635.0" layoutY="55.0" text="0.00  QRL">
+               <font>
+                  <Font name="Titillium Web Regular" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="balanceTotalLabel" layoutX="635.0" layoutY="80.0" text="0.00  QRL">
+               <font>
+                  <Font name="Titillium Web SemiBold" size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="notSyncedLabel" layoutX="137.0" layoutY="18.0" text="NOT SYNCED" textFill="RED" visible="false">
+               <font>
+                  <Font name="Titillium Web Bold" size="25.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Label layoutX="550.0" layoutY="136.0" text="STAKE EARNINGS">
+         <font>
+            <Font name="Titillium Web SemiBold" size="25.0" />
+         </font>
+      </Label>
+      <AnchorPane layoutX="549.0" layoutY="204.0" prefHeight="230.0" prefWidth="260.0" style="-fx-background-color: white;">
+         <children>
+            <Label layoutX="21.0" layoutY="18.0" text="QRL">
+               <font>
+                  <Font name="Titillium Web Regular" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="21.0" layoutY="39.0" text="2.52599403">
+               <font>
+                  <Font name="Titillium Web Bold" size="25.0" />
+               </font>
+            </Label>
+            <Label layoutX="21.0" layoutY="86.0" text="BITCOIN">
+               <font>
+                  <Font name="Titillium Web Regular" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="21.0" layoutY="107.0" text="0.00035">
+               <font>
+                  <Font name="Titillium Web Bold" size="25.0" />
+               </font>
+            </Label>
+            <Label layoutX="22.0" layoutY="156.0" text="USD">
+               <font>
+                  <Font name="Titillium Web Regular" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="22.0" layoutY="177.0" text="\$1.45">
+               <font>
+                  <Font name="Titillium Web Bold" size="25.0" />
+               </font>
+            </Label>
+            <Line endX="220.0" layoutX="21.0" layoutY="80.0" />
+            <Line endX="220.0" layoutX="21.0" layoutY="148.0" />
+            <Label layoutX="163.0" layoutY="39.0" text="QRL">
+               <font>
+                  <Font name="Titillium Web SemiBold" size="25.0" />
+               </font>
+            </Label>
+            <Label layoutX="129.0" layoutY="107.0" text="BTC">
+               <font>
+                  <Font name="Titillium Web SemiBold" size="25.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <Label layoutX="550.0" layoutY="177.0" text="WEEK">
+         <font>
+            <Font name="Titillium Web Bold" size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="608.0" layoutY="177.0" text="MONTH">
+         <font>
+            <Font name="Titillium Web Regular" size="13.0" />
+         </font>
+      </Label>
+      <Label layoutX="677.0" layoutY="177.0" text="YEAR">
+         <font>
+            <Font name="Titillium Web Regular" size="13.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

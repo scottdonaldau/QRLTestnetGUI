@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="sendPane" prefHeight="568.0" prefWidth="831.0" style="-fx-background-color: #ecf0f1;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.SendController">
+   <children>
+      <Label layoutX="39.0" layoutY="136.0" text="Send to">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="sendField" layoutX="39.0" layoutY="171.0" prefHeight="25.0" prefWidth="439.0" />
+      <Label layoutX="39.0" layoutY="223.0" prefHeight="35.0" prefWidth="102.0" text="Amount">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <JFXTextField fx:id="amountField" layoutX="39.0" layoutY="257.0" prefHeight="25.0" prefWidth="439.0" />
+      <JFXButton fx:id="sendQRLButton" layoutX="309.0" layoutY="486.0" prefHeight="37.0" prefWidth="216.0" style="-fx-background-color: #1D2951;" text="Send" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </JFXButton>
+      <Label fx:id="txidLabel" layoutX="43.0" layoutY="310.0" text="Tx ID:" visible="false">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="txidArea" editable="false" layoutX="100.0" layoutY="308.0" prefHeight="25.0" prefWidth="387.0" visible="false" />
+      <Label fx:id="msgLabel" layoutX="50.0" layoutY="338.0" text="Msg:" visible="false">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="msgArea" layoutX="100.0" layoutY="338.0" prefHeight="17.0" prefWidth="387.0" visible="false">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Pane prefHeight="101.0" prefWidth="833.0" style="-fx-background-color: white;">
+         <children>
+            <Label layoutX="14.0" layoutY="24.0" text="SEND QRL">
+               <font>
+                  <Font name="Titillium Web Bold" size="33.0" />
+               </font>
+            </Label>
+            <Label layoutX="336.0" layoutY="14.0" text="BALANCE: ">
+               <font>
+                  <Font name="Titillium Web SemiBold" size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="336.0" layoutY="49.0" text="ADDRESS:">
+               <font>
+                  <Font name="Titillium Web SemiBold" size="22.0" />
+               </font>
+            </Label>
+            <Label layoutX="450.0" layoutY="14.0" text="0.00">
+               <font>
+                  <Font name="Titillium Web SemiBold" size="22.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

@@ -8,8 +8,6 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXTreeTableView;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +35,6 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 
 /**
@@ -47,8 +44,6 @@ import javafx.scene.layout.Pane;
 public class ParentController implements Initializable {
 
     //PERMANENT GUI
-    @FXML
-    private ImageView btn_exit;
     @FXML
     private Label QRLVersion, nodeBox, syncBox, notSyncedLabel, topQRLLabel, topQRLValue;
     @FXML
@@ -60,64 +55,49 @@ public class ParentController implements Initializable {
 
     //OVERVIEW PANE
     @FXML
+    private OverviewController overviewController;
+    @FXML
+    private AnchorPane overviewScreen;
+    /*
+    @FXML
     private AnchorPane overviewPane;
     @FXML
     private Label balanceLabel, balanceLabelQRL, balanceSpendableLabel, balanceUnconfirmedLabel, balanceStakingLabel, balanceTotalLabel;
-    //@FXML
-    //private JFXTreeTableView recentTransactionsTable;
-
+    */
     //WALLET PANE
     @FXML
     private WalletController walletController;
     @FXML
     private AnchorPane walletScreen;
-    //@FXML
-    //private AnchorPane walletPane;
-    //@FXML
-    //private TextField walletAddress;
-    //@FXML
-    //private Label walletBalance, versionLabel, uptimeLabel, nodesLabel, stakingLabel, syncLabel;
 
     //SEND PANE
     @FXML
-    private AnchorPane sendPane;
+    private SendController sendController;
     @FXML
-    private JFXTextField sendField, amountField;
-    @FXML
-    private TextField txidArea;
-    @FXML
-    private Label msgLabel, txidLabel, msgArea;
+    private AnchorPane sendScreen;
 
     //RECEIVE PANE
     @FXML
-    private AnchorPane receivePane;
+    private ReceiveController receiveController;
+    @FXML
+    private AnchorPane receiveScreen;
 
     //TRANSACTION PANE
     @FXML
-    private AnchorPane transactionPane;
-    //@FXML
-    //private JFXTreeTableView txTable;
+    private TransactionsController transactionsController;
+    @FXML
+    private AnchorPane transactionsScreen;
 
     //ABOUT PANE
     @FXML
-    private AnchorPane aboutPane;
+    private AboutController aboutController;
+    @FXML
+    private AnchorPane aboutScreen;
+
+    
     private Service<Void> backgroundThread;
 
-    @FXML
-    private void handleButtonAction(MouseEvent event) {
-        System.exit(-1);
-    }
-
-    @FXML
-    private void handleButtonAction2(MouseEvent event) {
-        btn_exit.setImage(new Image("images/closePressed.png"));
-    }
-
-    @FXML
-    private void handleButtonAction3(MouseEvent event) {
-        btn_exit.setImage(new Image("images/close.png"));
-    }
-
+    
     @FXML
     private void displayNodesMessage(MouseEvent event) {
         nodeBox.setVisible(true);
@@ -153,25 +133,42 @@ public class ParentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-            //walletPane.getChildren().setAll(FXMLLoader.load("vista2.fxml"));
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/FXMLWallet.fxml"));
-            walletScreen.getChildren().setAll((AnchorPane) loader.load());
+            FXMLLoader overviewLoader = new FXMLLoader(getClass().getResource("/View/FXMLOverview.fxml"));
+            overviewScreen.getChildren().setAll((AnchorPane) overviewLoader.load());
+            overviewController = overviewLoader.getController();
+            overviewController.init(this);
             
-            //FXMLLoader loader = new FXMLLoader(getClass().getResource("/View/FXMLWallet.fxml"));
-            //Parent root = (Parent) loader.load();
-            walletController = loader.getController();
-            System.out.println("LOOK AT ME: " + walletController);
+            FXMLLoader walletLoader = new FXMLLoader(getClass().getResource("/View/FXMLWallet.fxml"));
+            walletScreen.getChildren().setAll((AnchorPane) walletLoader.load());
+            walletController = walletLoader.getController();
+            walletController.init(this);
             
+            FXMLLoader sendLoader = new FXMLLoader(getClass().getResource("/View/FXMLSend.fxml"));
+            sendScreen.getChildren().setAll((AnchorPane) sendLoader.load());
+            sendController = sendLoader.getController();
+            sendController.init(this);
+
+            FXMLLoader receiveLoader = new FXMLLoader(getClass().getResource("/View/FXMLReceive.fxml"));
+            receiveScreen.getChildren().setAll((AnchorPane) receiveLoader.load());
+            receiveController = receiveLoader.getController();
+            receiveController.init(this);
+
+            FXMLLoader transactionsLoader = new FXMLLoader(getClass().getResource("/View/FXMLTransactions.fxml"));
+            transactionsScreen.getChildren().setAll((AnchorPane) transactionsLoader.load());
+            transactionsController = transactionsLoader.getController();
+            transactionsController.init(this);
+
+            FXMLLoader aboutLoader = new FXMLLoader(getClass().getResource("/View/FXMLAbout.fxml"));
+            aboutScreen.getChildren().setAll((AnchorPane) aboutLoader.load());
+            aboutController = aboutLoader.getController();
+            aboutController.init(this);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        /*
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("View/FXMLWallet.fxml"));
-        walletController = fxmlLoader.<WalletController>getController();
-        //walletController.init(this);
+
+        changeMenuColours(overviewButton);
+        changePane(overviewScreen);
         
-         */
-        System.out.println("THING");
         Image syncingImg = new Image("images/loading.gif");
         Image errorImg = new Image("images/error.png");
         Image syncedImg = new Image("images/synced.png");
@@ -217,15 +214,15 @@ public class ParentController implements Initializable {
                             Platform.runLater(() -> {
 
                                 topQRLValue.setText("$" + Math.round((Double.parseDouble(newNode.getBalance()) * Double.parseDouble(QRLPrice)) * 100.0) / 100.0);
+                                
+                                overviewController.setBalance(newNode.getBalance());
+                                overviewController.setBalanceQRLPosition();
+                                overviewController.setBalanceSpendable(newNode.getBalanceSpendable() + "   QRL");
+                                overviewController.setBalanceUnconfirmed(newNode.getBalanceUnconfirmed() + "   QRL");
+                                overviewController.setBalanceStaking(newNode.getBalanceStaking() + "   QRL");
+                                //Currently 'TOTAL' is set to same as Spendable
+                                overviewController.setBalanceTotal(newNode.getBalanceSpendable() + "   QRL");
 
-                                balanceLabel.setText(newNode.getBalance());
-
-                                balanceLabelQRL.setLayoutX(balanceLabel.getLayoutX() + balanceLabel.getWidth() + 15);
-
-                                balanceSpendableLabel.setText(newNode.getBalanceSpendable() + "   QRL");
-                                balanceUnconfirmedLabel.setText(newNode.getBalanceUnconfirmed() + "   QRL");
-                                balanceStakingLabel.setText(newNode.getBalanceStaking() + "   QRL");
-                                balanceTotalLabel.setText(newNode.getBalanceSpendable() + "   QRL");
                                 topQRLLabel.setText(newNode.getBalanceSpendable() + "  QRL");
 
                                 if (QRLVersion.getText().equals("") && newNode.getVersion() != null) {
@@ -299,7 +296,7 @@ public class ParentController implements Initializable {
                 };
             }
         };
-        
+
         /*
         backgroundThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
             @Override
@@ -317,7 +314,7 @@ public class ParentController implements Initializable {
     private void overviewClicked(MouseEvent event) {
         manageTransactions();
         changeMenuColours(overviewButton);
-        changePane(overviewPane);
+        changePane(overviewScreen);
     }
 
     @FXML
@@ -329,13 +326,13 @@ public class ParentController implements Initializable {
     @FXML
     private void sendClicked(MouseEvent event) {
         changeMenuColours(sendButton);
-        changePane(sendPane);
+        changePane(sendScreen);
     }
 
     @FXML
     private void receiveClicked(MouseEvent event) {
         changeMenuColours(receiveButton);
-        changePane(receivePane);
+        changePane(receiveScreen);
     }
 
     private void manageTransactions() {
@@ -400,7 +397,7 @@ public class ParentController implements Initializable {
                         dateLabel.setLayoutY(layoutY);
                         layoutY += layoutBuffer;
                         dateLabel.setVisible(true);
-                        overviewPane.getChildren().add(dateLabel);
+                        overviewScreen.getChildren().add(dateLabel);
 
                         System.out.println("HASHMAP KEY: " + entry.getKey());
 
@@ -444,7 +441,7 @@ public class ParentController implements Initializable {
 
                             newPane.getChildren().addAll(time, address, amount);
                             newPane.setVisible(true);
-                            overviewPane.getChildren().add(newPane);
+                            overviewScreen.getChildren().add(newPane);
 
                             System.out.println(t.getTimeProperty().get());
                             layoutY += layoutBuffer + 35;
@@ -464,10 +461,9 @@ public class ParentController implements Initializable {
     }
 
     @FXML
-
     private void transactionsClicked(MouseEvent event) {
         changeMenuColours(transactionsButton);
-        changePane(transactionPane);
+        changePane(transactionsScreen);
         /*
         JFXTreeTableColumn txTime = new JFXTreeTableColumn("Time");
         JFXTreeTableColumn txHash = new JFXTreeTableColumn("Tx Hash");
@@ -553,7 +549,7 @@ public class ParentController implements Initializable {
     @FXML
     private void aboutClicked(MouseEvent event) {
         changeMenuColours(aboutButton);
-        changePane(aboutPane);
+        changePane(aboutScreen);
     }
 
     @FXML
@@ -634,16 +630,13 @@ public class ParentController implements Initializable {
         return new Task<Void>() {
             @Override
             public Void call() throws Exception {
+                //PERFORM SENDING OPERATION HERE
+                /*
                 String fromAddress = "0";
+                
                 String sendAddress = sendField.getText();
                 String sendAmount = amountField.getText();
-                /*
-                System.out.println("DOING WHAAAT");
-                for (int count = 1; count <= 5; count++) {
-                    Thread.sleep(1000);
-                    updateMessage("Task " + taskNumber + ": Count " + count);
-                }
-                 */
+
                 String[] responses = newNode.sendQRL(fromAddress, sendAddress, sendAmount);
                 Platform.runLater(() -> {
                     txidArea.setVisible(true);
@@ -653,48 +646,10 @@ public class ParentController implements Initializable {
                     txidArea.setText(responses[1]);
                     msgArea.setText(responses[3]);
                 });
-
+                 */
                 return null;
             }
         };
-    }
-
-    @FXML
-    private void sendButtonClicked(MouseEvent event) {
-
-        String fromAddress = "0";
-        String sendAddress = sendField.getText();
-        String sendAmount = amountField.getText();
-
-        if (sendAddress.equals("")) {
-            msgArea.setVisible(true);
-            if (sendAmount.equals("")) {
-                msgArea.setText("Please enter an address and an amount to send.");
-            } else {
-                msgArea.setText("Please enter an address.");
-            }
-        } else if (sendAmount.equals("")) {
-            msgArea.setVisible(true);
-            msgArea.setText("Please enter an amount.");
-        } else if (sendAddress.length() != 69 && sendAddress.charAt(0) != 'Q') {
-            msgArea.setVisible(true);
-            msgArea.setText("Please enter a valid address." + "Length: " + sendAddress.length() + " charat: " + sendAddress.charAt(0));
-        } else if (!sendAmount.matches(checkSendRegex)) {
-            msgArea.setVisible(true);
-            msgArea.setText(msgArea.getText() + "\nPlease enter a valid amount to send.");
-        } else {
-            Task<Void> task = sendQRLTask();
-
-            task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-                @Override
-                public void handle(WorkerStateEvent taskEvent) {
-                    //Add here
-                }
-            });
-
-            exec.submit(task);
-
-        }
     }
 
     @FXML
@@ -712,14 +667,13 @@ public class ParentController implements Initializable {
     @FXML
     void changePane(AnchorPane pane) {
         try {
-
-            overviewPane.setVisible(false);
-            sendPane.setVisible(false);
-            receivePane.setVisible(false);
-            transactionPane.setVisible(false);
-            aboutPane.setVisible(false);
+            overviewScreen.setVisible(false);
             walletScreen.setVisible(false);
-            walletController.setVisibility(true);
+            sendScreen.setVisible(false);
+            receiveScreen.setVisible(false);
+            transactionsScreen.setVisible(false);
+            aboutScreen.setVisible(false);
+            
             pane.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();

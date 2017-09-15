@@ -27,7 +27,7 @@ public class QRLWallet extends Application {
         //stage.initStyle(StageStyle.UNDECORATED);
         Scene scene = new Scene(root);
 
-        stage.getIcons().add(new Image("images/icon.png"));
+        stage.getIcons().add(new Image("images/iconColour.png"));
         stage.setScene(scene);
         stage.show();
     }

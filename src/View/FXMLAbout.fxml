@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane id="AnchorPane" fx:id="aboutPane" prefHeight="568.0" prefWidth="831.0" style="-fx-background-color: #ecf0f1;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="Controller.AboutController">
+   <children>
+      <Label layoutX="302.0" layoutY="272.0" text="Testnet wallet. Created by Aidan">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
+      <Label layoutX="266.0" layoutY="212.0" text="Quantum Resistant Ledger">
+         <font>
+            <Font name="System Bold" size="24.0" />
+         </font>
+      </Label>
+      <Pane prefHeight="101.0" prefWidth="833.0" style="-fx-background-color: white;">
+         <children>
+            <Label layoutX="14.0" layoutY="24.0" text="ABOUT">
+               <font>
+                  <Font name="Titillium Web Bold" size="33.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

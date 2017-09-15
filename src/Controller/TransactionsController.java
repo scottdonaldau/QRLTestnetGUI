@@ -7,24 +7,23 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 
 /**
- * FXML Controller class
+ * FXML Transactions class
  *
  * @author Aidan
  */
-public class WalletController implements Initializable {
-
+public class TransactionsController implements Initializable {
+    
     @FXML
-    AnchorPane walletPane;
+    AnchorPane transactionsPane;
 
     private ParentController parent;
-
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }   
+    }
 
     public void init(ParentController mainController) {
         parent = mainController;
     }
-
 }

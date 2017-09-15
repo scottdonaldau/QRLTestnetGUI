@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package Controller;
 
 import java.net.URL;
@@ -11,10 +16,10 @@ import javafx.scene.layout.AnchorPane;
  *
  * @author Aidan
  */
-public class WalletController implements Initializable {
+public class ReceiveController implements Initializable {
 
     @FXML
-    AnchorPane walletPane;
+    AnchorPane receivePane;
 
     private ParentController parent;
 
@@ -26,5 +31,4 @@ public class WalletController implements Initializable {
     public void init(ParentController mainController) {
         parent = mainController;
     }
-
 }
