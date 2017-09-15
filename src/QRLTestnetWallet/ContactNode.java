@@ -58,6 +58,24 @@ public class ContactNode {
 
         return objectResponse;
     }
+    
+     public JsonObject sendCommandAndGetJsonObject(String command, String nestedContent, int timeout) {
+        String stringResponse = "";
+
+        stringResponse = sendCommandAndGetString(command, timeout);
+
+        JsonObject objectResponse = null;
+        JsonObject objectResponseNested = null;
+        try {
+            objectResponse = Json.parse(stringResponse).asObject();
+            objectResponseNested = objectResponse.get(nestedContent).asObject();
+        } catch (ParseException pe) {
+            //pe.printStackTrace();
+            System.out.println("Could not parse reponse to JsonObject...");
+        }
+
+        return objectResponseNested;
+    }
 
     public JsonArray sendCommandAndGetJsonArray(String command, String nestedContent, int timeout) {
         String stringResponse = sendCommandAndGetString(command, timeout);
@@ -124,8 +142,8 @@ public class ContactNode {
                 byte[] responseArray = baos.toByteArray();
                 baos.reset();
 
-                String tostringstuff = new String(responseArray);
-                System.out.println("Node Response: " + tostringstuff);
+                //String tostringstuff = new String(responseArray);
+                //System.out.println("Node Response: " + tostringstuff);
                 return responseArray;
             }
             baos.reset();

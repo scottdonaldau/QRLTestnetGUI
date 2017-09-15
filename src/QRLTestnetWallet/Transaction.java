@@ -15,15 +15,19 @@ import javafx.beans.property.SimpleStringProperty;
 public class Transaction extends RecursiveTreeObject<Transaction>{
 
     SimpleStringProperty timeProperty;
+    SimpleStringProperty typeProperty;
     SimpleStringProperty hashProperty;
     SimpleStringProperty toProperty;
+    SimpleStringProperty fromProperty;
     SimpleStringProperty amountProperty;
     SimpleStringProperty blockProperty;
     
-    public Transaction(String time, String hash, String to, String amount, String block) {
+    public Transaction(String time, String type, String hash, String to, String from, String amount, String block) {
         this.timeProperty = new SimpleStringProperty(time);
+        this.typeProperty = new SimpleStringProperty(type);
         this.hashProperty = new SimpleStringProperty(hash);
         this.toProperty = new SimpleStringProperty(to);
+        this.fromProperty = new SimpleStringProperty(from);
         this.amountProperty = new SimpleStringProperty(amount);
         this.blockProperty = new SimpleStringProperty(block);
     }
@@ -32,12 +36,20 @@ public class Transaction extends RecursiveTreeObject<Transaction>{
         return timeProperty;
     }
     
+    public SimpleStringProperty getTypeProperty() {
+        return typeProperty;
+    }
+    
     public SimpleStringProperty getHashProperty() {
         return hashProperty;
     }
     
     public SimpleStringProperty getToProperty() {
         return toProperty;
+    }
+    
+    public SimpleStringProperty getFromProperty() {
+        return fromProperty;
     }
     
     public SimpleStringProperty getAmountProperty() {

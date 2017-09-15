@@ -1,0 +1,52 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 26/08/2017, 10:43:45 PM
+    Author     : Aidan
+*/
+
+#nodeStatusPopup {
+    -fx-background-color: #1D2951;
+    -fx-shape: "M54,2H6C2.748,2,0,4.748,0,8v33c0,3.252,2.748,6,6,6h28.558l9.703,10.673C44.454,57.885,44.724,58,45,58c0.121,0,0.243-0.022,0.361-0.067C45.746,57.784,46,57.413,46,57V47h8c3.252,0,6-2.748,6-6V8C60,4.748,57.252,2,54,2z";
+    -fx-padding: 5 5 15 5; 
+}
+
+#blockStatusPopup {
+    -fx-background-color: #1D2951;
+    -fx-shape: "M54,2H6C2.748,2,0,4.748,0,8v33c0,3.252,2.748,6,6,6h28.558l9.703,10.673C44.454,57.885,44.724,58,45,58c0.121,0,0.243-0.022,0.361-0.067C45.746,57.784,46,57.413,46,57V47h8c3.252,0,6-2.748,6-6V8C60,4.748,57.252,2,54,2z";
+    -fx-padding: 5 5 20 5; 
+}
+
+#copyLabel, #copyLabel:focused {
+    -fx-background-color: transparent ;
+    -fx-background-insets: 0px ;
+    -fx-display-caret: false;
+}
+
+#timeLabel, #dateLabel, #inputQRLLabel, #outputQRLLabel {
+    -fx-font-family: "Titillium Web";
+    -fx-font-size: 14;
+}
+
+#addressLabel, #addressLabel:focused {
+    -fx-background-color: transparent ;
+    -fx-background-insets: 0px ;
+    -fx-display-caret: false;
+}
+
+#inputQRLLabel, #inputQRLLabel:focused{
+    -fx-text-fill: #098a00;
+    -fx-font-weight: bold;
+}
+
+#outputQRLLabel, #outputQRLLabel:focused {
+    -fx-text-fill: #9a0303;
+    -fx-font-weight: bold;
+}
+
+#txPane {
+    -fx-background-color: white;
+}

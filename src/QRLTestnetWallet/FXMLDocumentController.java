@@ -7,38 +7,33 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
-import com.jfoenix.controls.JFXTreeTableColumn;
 import com.jfoenix.controls.JFXTreeTableView;
-import com.jfoenix.controls.RecursiveTreeItem;
-import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-
 import javafx.application.Platform;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeTableColumn;
-import javafx.util.Callback;
+import javafx.scene.layout.Pane;
 
 /**
  *
@@ -49,10 +44,22 @@ public class FXMLDocumentController implements Initializable {
     //PERMANENT GUI
     @FXML
     private ImageView btn_exit;
+    @FXML
+    private Label QRLVersion, nodeBox, syncBox, notSyncedLabel, topQRLLabel, topQRLValue;
+    @FXML
+    private ImageView networkImage, syncImage;
 
     //SIDE MENU
     @FXML
-    private JFXButton walletButton, sendButton, transactionsButton, aboutButton, exitButton;
+    private JFXButton overviewButton, walletButton, sendButton, receiveButton, transactionsButton, aboutButton, exitButton;
+
+    //OVERVIEW PANE
+    @FXML
+    private AnchorPane overviewPane;
+    @FXML
+    private Label balanceLabel, balanceLabelQRL, balanceSpendableLabel, balanceUnconfirmedLabel, balanceStakingLabel, balanceTotalLabel;
+    @FXML
+    private JFXTreeTableView recentTransactionsTable;
 
     //WALLET PANE
     @FXML
@@ -72,6 +79,10 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private Label msgLabel, txidLabel, msgArea;
 
+    //RECEIVE PANE
+    @FXML
+    private AnchorPane receivePane;
+
     //TRANSACTION PANE
     @FXML
     private AnchorPane transactionPane;
@@ -90,12 +101,32 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void handleButtonAction2(MouseEvent event) {
-        btn_exit.setImage(new Image("closePressed.png"));
+        btn_exit.setImage(new Image("images/closePressed.png"));
     }
 
     @FXML
     private void handleButtonAction3(MouseEvent event) {
-        btn_exit.setImage(new Image("close.png"));
+        btn_exit.setImage(new Image("images/close.png"));
+    }
+
+    @FXML
+    private void displayNodesMessage(MouseEvent event) {
+        nodeBox.setVisible(true);
+    }
+
+    @FXML
+    private void hideNodesMessage(MouseEvent event) {
+        nodeBox.setVisible(false);
+    }
+
+    @FXML
+    private void displaySyncMessage(MouseEvent event) {
+        syncBox.setVisible(true);
+    }
+
+    @FXML
+    private void hideSyncMessage(MouseEvent event) {
+        syncBox.setVisible(false);
     }
 
     public NodeControl newNode;
@@ -104,14 +135,33 @@ public class FXMLDocumentController implements Initializable {
 
     String checkSendRegex = "[\\x00-\\x20]*[+-]?(((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*";
 
+    public String QRLPrice = null;
+
+    public boolean addedTransactions = false;
+
+    static String[] suffixes = {"th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "th", "st", "nd", "rd", "th", "th", "th", "th", "th", "th", "th", "st"};
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        Image syncingImg = new Image("images/loading.gif");
+        Image errorImg = new Image("images/error.png");
+        Image syncedImg = new Image("images/synced.png");
+        syncImage.setImage(errorImg);
+
         newNode = new NodeControl();
         newNode.setup();
         while (!newNode.getConnected()) {
             newNode.connect();
         }
+        try {
+            QRLPrice = MarketData.collectQRLData();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
+        manageTransactions();
+
+        //String response = "";
         backgroundThread = new Service<Void>() {
             @Override
             protected Task<Void> createTask() {
@@ -123,31 +173,105 @@ public class FXMLDocumentController implements Initializable {
 
                             Task<Void> infoTask = getinfoTask();
                             Task<Void> walletTask = getWalletTask();
+                            Task<Void> blockTask = getBlockTask();
 
                             //infoTask.setOnSucceeded(taskEvent -> pendingTasks.set(pendingTasks.get() - 1));
                             exec.submit(infoTask);
                             exec.submit(walletTask);
+                            exec.submit(blockTask);
+
+                            if (!addedTransactions) {
+                                manageTransactions();
+                            }
+
                             Thread.sleep(500);
                             Platform.runLater(() -> {
-                                versionLabel.setText(newNode.getVersion());
+
+                                topQRLValue.setText("$" + Math.round((Double.parseDouble(newNode.getBalance()) * Double.parseDouble(QRLPrice)) * 100.0) / 100.0);
+
+                                balanceLabel.setText(newNode.getBalance());
+
+                                balanceLabelQRL.setLayoutX(balanceLabel.getLayoutX() + balanceLabel.getWidth() + 15);
+
+                                balanceSpendableLabel.setText(newNode.getBalanceSpendable() + "   QRL");
+                                balanceUnconfirmedLabel.setText(newNode.getBalanceUnconfirmed() + "   QRL");
+                                balanceStakingLabel.setText(newNode.getBalanceStaking() + "   QRL");
+                                balanceTotalLabel.setText(newNode.getBalanceSpendable() + "   QRL");
+                                topQRLLabel.setText(newNode.getBalanceSpendable() + "  QRL");
+
+                                if (QRLVersion.getText().equals("") && newNode.getVersion() != null) {
+                                    QRLVersion.setText("Quantum Resistant Ledger " + newNode.getVersion());
+                                }
+
+                                if (newNode.getNodes() != null) {
+                                    int nodes = Integer.parseInt(newNode.getNodes());
+                                    System.out.println("NODES: " + nodes);
+                                    if (nodes < 3) {
+                                        networkImage.setImage(new Image("images/network1.png"));
+                                    } else if (nodes < 5) {
+                                        networkImage.setImage(new Image("images/network2.png"));
+                                    } else if (nodes < 7) {
+                                        networkImage.setImage(new Image("images/network3.png"));
+                                    } else if (nodes >= 7) {
+                                        networkImage.setImage(new Image("images/network4.png"));
+                                    }
+
+                                    nodeBox.setText(newNode.getNodes() + " nodes connected.");
+                                }
+                                System.out.println("SYNC STATUS: " + newNode.getSync());
+                                if (newNode.getSync() == null || newNode.getBlock() == null) {
+                                    notSyncedLabel.setVisible(true);
+                                    syncBox.setText("No QRL node detected. Please restart node and check existing connections.");
+                                    if (syncImage.getImage() != errorImg) {
+                                        syncImage.setImage(errorImg);
+                                    }
+                                } else if (newNode.getSync().equals("syncing")) {
+                                    if (syncImage.getImage() != syncingImg) {
+                                        syncImage.setImage(syncingImg);
+                                    }
+                                    notSyncedLabel.setVisible(true);
+                                    if (!newNode.getBlock().equals("0")) {
+                                        syncBox.setText("Syncing with QRL blockchain. Downloading block #" + newNode.getBlock() + " of estimated " + newNode.getEstimatedBlocks() + ".");
+                                    }
+                                } else if (newNode.getSync().equals("unsynced")) {
+                                    notSyncedLabel.setVisible(true);
+                                    if (syncImage.getImage() != errorImg) {
+                                        syncImage.setImage(errorImg);
+                                    }
+                                    if (!newNode.getBlock().equals("0")) {
+                                        syncBox.setText("Syncing with QRL blockchain. Downloading block #" + newNode.getBlock() + " of estimated 20,000.");
+                                    }
+                                } else if (newNode.getSync().equals("synced")) {
+                                    notSyncedLabel.setVisible(false);
+                                    if (syncImage.getImage() != syncedImg) {
+                                        syncImage.setImage(syncedImg);
+                                    }
+                                    if (!newNode.getBlock().equals("0")) {
+                                        syncBox.setText("QRL blockchain synced. Current blockheight #" + newNode.getBlock() + ".");
+                                    }
+                                }
+
+                                /*
                                 uptimeLabel.setText(newNode.getUptime());
                                 nodesLabel.setText(newNode.getNodes());
                                 stakingLabel.setText(newNode.getStaking());
                                 syncLabel.setText(newNode.getSync());
                                 walletBalance.setText(newNode.getBalance());
-
+                                 */
+ /*
                                 if (walletAddress.getText() == null || walletAddress.getText() == "Unavailable" || walletAddress.getText().equals("")) {
                                     walletAddress.setText(newNode.getAddress());
                                 }
+                                 */
                             });
-                            Thread.sleep(500);
+                            Thread.sleep(2000);
 
                         }
                     }
                 };
             }
         };
-
+        /*
         backgroundThread.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 
             @Override
@@ -156,8 +280,16 @@ public class FXMLDocumentController implements Initializable {
                 uptimeLabel.textProperty().unbind();
             }
         });
+         */
         backgroundThread.restart();
 
+    }
+
+    @FXML
+    private void overviewClicked(MouseEvent event) {
+        manageTransactions();
+        changeMenuColours(overviewButton);
+        changePane(overviewPane);
     }
 
     @FXML
@@ -173,10 +305,142 @@ public class FXMLDocumentController implements Initializable {
     }
 
     @FXML
+    private void receiveClicked(MouseEvent event) {
+        changeMenuColours(receiveButton);
+        changePane(receivePane);
+    }
+
+    private void manageTransactions() {
+        Task<Transaction[]> transactionTask = getTransactionsTask();
+
+        transactionTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+            @Override
+            public void handle(WorkerStateEvent taskEvent) {
+                try {
+                    Transaction[] transactions = transactionTask.getValue();
+
+                    List<Transaction> txList = new ArrayList();
+
+                    for (Transaction t : transactions) {
+                        txList.add(t);
+                    }
+
+                    Collections.sort(txList, new Comparator<Transaction>() {
+                        public int compare(Transaction o1, Transaction o2) {
+                            return o2.getTimeProperty().get().compareTo(o1.getTimeProperty().get());
+                        }
+                    });
+
+                    if (txList.size() > 4) {
+                        txList.subList(4, txList.size()).clear();
+                    }
+
+                    Set<String> timeSet = new HashSet<>();
+
+                    Map<String, List<Transaction>> timeMap = new HashMap<String, List<Transaction>>();
+
+                    for (Transaction t : txList) {
+                        List<Transaction> newTXList = new ArrayList<Transaction>();
+
+                        Double newDbl = Double.parseDouble(t.getTimeProperty().get()) * 1000;
+
+                        Date date = new Date(newDbl.longValue());
+                        SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM", Locale.US);
+                        SimpleDateFormat dayFormat = new SimpleDateFormat("d", Locale.US);
+                        int day = Integer.parseInt(dayFormat.format(date));
+                        String monthDayStr = monthFormat.format(date).toUpperCase() + " " + day + suffixes[day];
+
+                        if (timeMap.containsKey(monthDayStr)) {
+                            List<Transaction> tempTXList = timeMap.get(monthDayStr);
+                            tempTXList.add(t);
+                            timeMap.put(monthDayStr, tempTXList);
+                        } else {
+                            newTXList.add(t);
+                            timeMap.put(monthDayStr, newTXList);
+                        }
+                    }
+
+                    Integer labelLayoutX = 14;
+                    Integer paneLayoutX = 30;
+                    Integer layoutY = 177;
+                    Integer layoutBuffer = 27;
+
+                    for (Map.Entry<String, List<Transaction>> entry : timeMap.entrySet()) {
+                        Label dateLabel = new Label(entry.getKey());
+                        dateLabel.setId("dateLabel");
+                        dateLabel.setLayoutX(labelLayoutX);
+                        dateLabel.setLayoutY(layoutY);
+                        layoutY += layoutBuffer;
+                        dateLabel.setVisible(true);
+                        overviewPane.getChildren().add(dateLabel);
+
+                        System.out.println("HASHMAP KEY: " + entry.getKey());
+
+                        List<Transaction> tempList = entry.getValue();
+
+                        for (Transaction t : tempList) {
+                            Pane newPane = new Pane();
+                            newPane.setId("txPane");
+                            newPane.setLayoutX(paneLayoutX);
+                            newPane.setLayoutY(layoutY);
+                            newPane.setPrefSize(500, 53);
+
+                            Double newDbl = Double.parseDouble(t.getTimeProperty().get()) * 1000;
+                            Date date = new Date(newDbl.longValue());
+                            SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm:ss a", Locale.US);
+                            String timeStr = timeFormat.format(date);
+
+                            Label time = new Label(timeStr);
+                            time.setId("timeLabel");
+                            TextField address = new TextField();
+                            address.setId("addressLabel");
+                            address.setPrefWidth(240);
+                            Label amount = new Label();
+
+                            if (t.getToProperty().get().equals(newNode.getAddress())) {
+                                address.setText(t.getFromProperty().get());
+                                amount.setText("+" + t.getAmountProperty().get() + " QRL");
+                                amount.setId("inputQRLLabel");
+                            } else {
+                                address.setText(t.getToProperty().get());
+                                amount.setText("-" + t.getAmountProperty().get() + " QRL");
+                                amount.setId("outputQRLLabel");
+                            }
+
+                            time.setLayoutX(14);
+                            time.setLayoutY(16);
+                            address.setLayoutX(123);
+                            address.setLayoutY(16);
+                            amount.setLayoutX(375);
+                            amount.setLayoutY(16);
+
+                            newPane.getChildren().addAll(time, address, amount);
+                            newPane.setVisible(true);
+                            overviewPane.getChildren().add(newPane);
+
+                            System.out.println(t.getTimeProperty().get());
+                            layoutY += layoutBuffer + 35;
+                        }
+                    }
+
+                    addedTransactions = true;
+                    System.out.println("TRANSACTIONS HAVE BEEN DISPLAYED!!!");
+                } catch (Exception e) {
+                    System.out.println("Issue displaying transactions list...");
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        exec.submit(transactionTask);
+    }
+
+    @FXML
+
     private void transactionsClicked(MouseEvent event) {
         changeMenuColours(transactionsButton);
         changePane(transactionPane);
-
+        /*
         JFXTreeTableColumn txTime = new JFXTreeTableColumn("Time");
         JFXTreeTableColumn txHash = new JFXTreeTableColumn("Tx Hash");
         JFXTreeTableColumn txTo = new JFXTreeTableColumn("To");
@@ -255,6 +519,7 @@ public class FXMLDocumentController implements Initializable {
         });
 
         exec.submit(transactionTask);
+         */
     }
 
     @FXML
@@ -291,17 +556,35 @@ public class FXMLDocumentController implements Initializable {
         };
     }
 
-    private Task<String[][]> getTransactionsTask() {
+    private Task<Void> getBlockTask() {
         final int taskNumber = taskCount.incrementAndGet();
-        return new Task<String[][]>() {
+        return new Task<Void>() {
             @Override
-            public String[][] call() throws Exception {
+            public Void call() throws Exception {
+                System.out.println("Updating Block...");
+                newNode.updateBlock();
+                return null;
+            }
+        };
+    }
+
+    private Task<Transaction[]> getTransactionsTask() {
+        final int taskNumber = taskCount.incrementAndGet();
+        return new Task<Transaction[]>() {
+            @Override
+            public Transaction[] call() throws Exception {
                 System.out.println("Updating Transactions...");
                 newNode.updateTransactions();
+                //String[][] transactions = null;
+                //transactions = newNode.getTransactions();
 
-                String[][] transactions = newNode.getTransactions();
-
-                return transactions;
+                Transaction[] transactions = null;
+                transactions = newNode.getTransactions();
+                if (transactions == null) {
+                    return null;
+                } else {
+                    return transactions;
+                }
             }
         };
     }
@@ -388,8 +671,10 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     void changeMenuColours(JFXButton button) {
+        resetColour(overviewButton);
         resetColour(walletButton);
         resetColour(sendButton);
+        resetColour(receiveButton);
         resetColour(transactionsButton);
         resetColour(aboutButton);
         resetColour(exitButton);
@@ -398,11 +683,18 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     void changePane(AnchorPane pane) {
-        walletPane.setVisible(false);
-        sendPane.setVisible(false);
-        transactionPane.setVisible(false);
-        aboutPane.setVisible(false);
-        pane.setVisible(true);
+        try {
+
+            overviewPane.setVisible(false);
+            sendPane.setVisible(false);
+            receivePane.setVisible(false);
+            transactionPane.setVisible(false);
+            aboutPane.setVisible(false);
+            walletPane.setVisible(false);
+            pane.setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
