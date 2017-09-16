@@ -26,7 +26,8 @@ public class QRLWallet extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/View/FXMLParent.fxml"));
         //stage.initStyle(StageStyle.UNDECORATED);
         Scene scene = new Scene(root);
-
+        stage.setResizable(false);
+        stage.sizeToScene();
         stage.getIcons().add(new Image("images/iconColour.png"));
         stage.setScene(scene);
         stage.show();

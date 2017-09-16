@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-
-<AnchorPane fx:id="overviewPane" prefHeight="568.0" prefWidth="831.0" style="-fx-background-color: #ecf0f1;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111" fx:controller="Controller.OverviewController">
+<AnchorPane fx:id="overviewPane" prefHeight="568.0" prefWidth="831.0" style="-fx-background-color: #ecf0f1;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controller.OverviewController">
    <children>
       <Label layoutX="14.0" layoutY="136.0" text="RECENT TRANSACTIONS">
          <font>
@@ -90,7 +90,7 @@
                   <Font name="Titillium Web Regular" size="13.0" />
                </font>
             </Label>
-            <Label layoutX="21.0" layoutY="39.0" text="2.52599403">
+            <Label fx:id="stakeQRL" layoutX="21.0" layoutY="39.0" text="0">
                <font>
                   <Font name="Titillium Web Bold" size="25.0" />
                </font>
@@ -100,7 +100,7 @@
                   <Font name="Titillium Web Regular" size="13.0" />
                </font>
             </Label>
-            <Label layoutX="21.0" layoutY="107.0" text="0.00035">
+            <Label fx:id="stakeBTC" layoutX="21.0" layoutY="107.0" text="0">
                <font>
                   <Font name="Titillium Web Bold" size="25.0" />
                </font>
@@ -110,7 +110,7 @@
                   <Font name="Titillium Web Regular" size="13.0" />
                </font>
             </Label>
-            <Label layoutX="22.0" layoutY="177.0" text="\$1.45">
+            <Label fx:id="stakeDollar" layoutX="22.0" layoutY="177.0" text="\$0">
                <font>
                   <Font name="Titillium Web Bold" size="25.0" />
                </font>
@@ -122,27 +122,36 @@
                   <Font name="Titillium Web SemiBold" size="25.0" />
                </font>
             </Label>
-            <Label layoutX="129.0" layoutY="107.0" text="BTC">
+            <Label layoutX="161.0" layoutY="108.0" text="BTC">
                <font>
                   <Font name="Titillium Web SemiBold" size="25.0" />
                </font>
             </Label>
          </children>
       </AnchorPane>
-      <Label layoutX="550.0" layoutY="177.0" text="WEEK">
+      <Label fx:id="weekLabel" layoutX="550.0" layoutY="177.0" onMouseClicked="#weekClicked" text="WEEK">
          <font>
             <Font name="Titillium Web Bold" size="13.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
       </Label>
-      <Label layoutX="608.0" layoutY="177.0" text="MONTH">
+      <Label fx:id="monthLabel" layoutX="608.0" layoutY="177.0" onMouseClicked="#monthClicked" text="MONTH">
          <font>
             <Font name="Titillium Web Regular" size="13.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
       </Label>
-      <Label layoutX="677.0" layoutY="177.0" text="YEAR">
+      <Label fx:id="yearLabel" layoutX="677.0" layoutY="177.0" onMouseClicked="#yearClicked" text="YEAR">
          <font>
             <Font name="Titillium Web Regular" size="13.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
       </Label>
    </children>
 </AnchorPane>

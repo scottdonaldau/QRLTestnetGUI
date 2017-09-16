@@ -1,21 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Model;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.eclipsesource.json.Json;
-import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
-import com.eclipsesource.json.JsonValue;
 import com.eclipsesource.json.ParseException;
 
 /**
@@ -24,7 +15,11 @@ import com.eclipsesource.json.ParseException;
  */
 public class MarketData {
 
-    public static String collectQRLData() throws Exception {
+    private String QRLUSDPrice;
+    private String QRLBTCPrice;
+    private String QRLRank;
+
+    public Boolean collectQRLData() throws Exception {
         try {
             String url = "https://api.coinmarketcap.com/v1/ticker/quantum-resistant-ledger/?convert=USD";
 
@@ -46,32 +41,36 @@ public class MarketData {
                 response.append(inputLine);
             }
             in.close();
-            String QRLPrice = null;
+
             JsonObject objectResponse = null;
             try {
                 String QRLTemp = response.toString().substring(1, response.toString().length() - 1);
                 objectResponse = Json.parse(QRLTemp.toString()).asObject();
 
-                QRLPrice = objectResponse.getString("price_usd", "Unavailable");
+                QRLUSDPrice = objectResponse.getString("price_usd", "Unavailable");
+                QRLBTCPrice = objectResponse.getString("price_btc", "Unavailable");
+                QRLRank = objectResponse.getString("rank", "Unavailable");
+                
             } catch (ParseException pe) {
-                System.out.println("Could not parse reponse to JsonObject...");
+                System.out.println("Could not parse market data reponse to JsonObject...");
             }
 
-            return QRLPrice;
-
-            //System.out.println(response.toString());
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        return false;
     }
-    /*
-    public static void main(String[] args) {
-        try {
-            collectData();
-        } catch (Exception ex) {
-            Logger.getLogger(MarketData.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+    public String getQRLUSDPrice() {
+        return QRLUSDPrice;
     }
-     */
+
+    public String getQRLBTCPrice() {
+        return QRLBTCPrice;
+    }
+
+    public String getQRLRank() {
+        return QRLRank;
+    }
 }

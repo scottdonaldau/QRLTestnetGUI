@@ -50,3 +50,11 @@ and open the template in the editor.
 #txPane {
     -fx-background-color: white;
 }
+
+#selected {
+    -fx-font-weight: bold;
+}
+
+#unselected {
+    -fx-font-weight: normal;
+}

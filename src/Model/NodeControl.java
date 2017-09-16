@@ -161,6 +161,7 @@ public class NodeControl {
 
                     if(transaction.getTypeProperty().get().equals("TX")) {
                         System.out.println("TX = TX");
+                        System.out.println(transaction);
                         listTransactions.add(transaction);
                     } else if(transaction.getTypeProperty().get().equals("COINBASE")) {
                         System.out.println("TX = COINBASE");

@@ -45,7 +45,7 @@ public class ParentController implements Initializable {
 
     //PERMANENT GUI
     @FXML
-    private Label QRLVersion, nodeBox, syncBox, notSyncedLabel, topQRLLabel, topQRLValue;
+    private Label QRLVersion, nodeBox, syncBox, topQRLLabel, topQRLValue;
     @FXML
     private ImageView networkImage, syncImage;
 
@@ -124,7 +124,8 @@ public class ParentController implements Initializable {
 
     String checkSendRegex = "[\\x00-\\x20]*[+-]?(((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*";
 
-    public String QRLPrice = null;
+    public String QRLUSDPrice = null;
+    public String QRLBTCPrice = null;
 
     public boolean addedTransactions = false;
 
@@ -132,6 +133,8 @@ public class ParentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        MarketData marketData = new MarketData();
+        
         try {
             FXMLLoader overviewLoader = new FXMLLoader(getClass().getResource("/View/FXMLOverview.fxml"));
             overviewScreen.getChildren().setAll((AnchorPane) overviewLoader.load());
@@ -180,7 +183,9 @@ public class ParentController implements Initializable {
             newNode.connect();
         }
         try {
-            QRLPrice = MarketData.collectQRLData();
+            marketData.collectQRLData();
+            QRLUSDPrice = marketData.getQRLUSDPrice();
+            QRLBTCPrice = marketData.getQRLBTCPrice();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -213,7 +218,7 @@ public class ParentController implements Initializable {
                             Thread.sleep(500);
                             Platform.runLater(() -> {
 
-                                topQRLValue.setText("$" + Math.round((Double.parseDouble(newNode.getBalance()) * Double.parseDouble(QRLPrice)) * 100.0) / 100.0);
+                                topQRLValue.setText("$" + Math.round((Double.parseDouble(newNode.getBalance()) * Double.parseDouble(QRLUSDPrice)) * 100.0) / 100.0);
                                 
                                 overviewController.setBalance(newNode.getBalance());
                                 overviewController.setBalanceQRLPosition();
@@ -245,7 +250,7 @@ public class ParentController implements Initializable {
                                 }
                                 System.out.println("SYNC STATUS: " + newNode.getSync());
                                 if (newNode.getSync() == null || newNode.getBlock() == null) {
-                                    notSyncedLabel.setVisible(true);
+                                    overviewController.setSyncLabelVisibility(true);
                                     syncBox.setText("No QRL node detected. Please restart node and check existing connections.");
                                     if (syncImage.getImage() != errorImg) {
                                         syncImage.setImage(errorImg);
@@ -254,12 +259,12 @@ public class ParentController implements Initializable {
                                     if (syncImage.getImage() != syncingImg) {
                                         syncImage.setImage(syncingImg);
                                     }
-                                    notSyncedLabel.setVisible(true);
+                                    overviewController.setSyncLabelVisibility(true);
                                     if (!newNode.getBlock().equals("0")) {
                                         syncBox.setText("Syncing with QRL blockchain. Downloading block #" + newNode.getBlock() + " of estimated " + newNode.getEstimatedBlocks() + ".");
                                     }
                                 } else if (newNode.getSync().equals("unsynced")) {
-                                    notSyncedLabel.setVisible(true);
+                                    overviewController.setSyncLabelVisibility(true);
                                     if (syncImage.getImage() != errorImg) {
                                         syncImage.setImage(errorImg);
                                     }
@@ -267,7 +272,7 @@ public class ParentController implements Initializable {
                                         syncBox.setText("Syncing with QRL blockchain. Downloading block #" + newNode.getBlock() + " of estimated 20,000.");
                                     }
                                 } else if (newNode.getSync().equals("synced")) {
-                                    notSyncedLabel.setVisible(false);
+                                    overviewController.setSyncLabelVisibility(false);
                                     if (syncImage.getImage() != syncedImg) {
                                         syncImage.setImage(syncedImg);
                                     }
@@ -289,6 +294,8 @@ public class ParentController implements Initializable {
                                 }
                                  */
                             });
+                            
+                            overviewController.updateCoinbaseTX(QRLUSDPrice, QRLBTCPrice);
                             Thread.sleep(2000);
 
                         }
