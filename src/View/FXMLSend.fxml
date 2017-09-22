@@ -12,21 +12,11 @@
    <children>
       <Label layoutX="39.0" layoutY="136.0" text="Send to">
          <font>
-            <Font name="System Bold" size="24.0" />
+            <Font name="Titillium Web Bold" size="24.0" />
          </font>
       </Label>
       <JFXTextField fx:id="sendField" layoutX="39.0" layoutY="171.0" prefHeight="25.0" prefWidth="439.0" />
-      <Label layoutX="39.0" layoutY="223.0" prefHeight="35.0" prefWidth="102.0" text="Amount">
-         <font>
-            <Font name="System Bold" size="24.0" />
-         </font>
-      </Label>
       <JFXTextField fx:id="amountField" layoutX="39.0" layoutY="257.0" prefHeight="25.0" prefWidth="439.0" />
-      <JFXButton fx:id="sendQRLButton" layoutX="309.0" layoutY="486.0" prefHeight="37.0" prefWidth="216.0" style="-fx-background-color: #1D2951;" text="Send" textFill="WHITE">
-         <font>
-            <Font name="System Bold" size="18.0" />
-         </font>
-      </JFXButton>
       <Label fx:id="txidLabel" layoutX="43.0" layoutY="310.0" text="Tx ID:" visible="false">
          <font>
             <Font name="System Bold" size="14.0" />
@@ -67,5 +57,15 @@
             </Label>
          </children>
       </Pane>
+      <Label layoutX="39.0" layoutY="220.0" text="Amount">
+         <font>
+            <Font name="Titillium Web Bold" size="24.0" />
+         </font>
+      </Label>
+      <JFXButton layoutX="369.0" layoutY="496.0" onMouseClicked="#sendButtonClicked" style="-fx-background-color: #1D2951;" text="SEND" textFill="WHITE">
+         <font>
+            <Font name="Titillium Web Regular" size="25.0" />
+         </font>
+      </JFXButton>
    </children>
 </AnchorPane>

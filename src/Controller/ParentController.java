@@ -97,32 +97,15 @@ public class ParentController implements Initializable {
     
     private Service<Void> backgroundThread;
 
-    
-    @FXML
-    private void displayNodesMessage(MouseEvent event) {
-        nodeBox.setVisible(true);
-    }
-
-    @FXML
-    private void hideNodesMessage(MouseEvent event) {
-        nodeBox.setVisible(false);
-    }
-
-    @FXML
-    private void displaySyncMessage(MouseEvent event) {
-        syncBox.setVisible(true);
-    }
-
-    @FXML
-    private void hideSyncMessage(MouseEvent event) {
-        syncBox.setVisible(false);
-    }
+    public ExecutorService exec = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r);
+        t.setDaemon(true);
+        return t;
+    });
 
     public NodeControl newNode;
 
     private AtomicInteger taskCount = new AtomicInteger(0);
-
-    String checkSendRegex = "[\\x00-\\x20]*[+-]?(((((\\p{Digit}+)(\\.)?((\\p{Digit}+)?)([eE][+-]?(\\p{Digit}+))?)|(\\.((\\p{Digit}+))([eE][+-]?(\\p{Digit}+))?)|(((0[xX](\\p{XDigit}+)(\\.)?)|(0[xX](\\p{XDigit}+)?(\\.)(\\p{XDigit}+)))[pP][+-]?(\\p{Digit}+)))[fFdD]?))[\\x00-\\x20]*";
 
     public String QRLUSDPrice = null;
     public String QRLBTCPrice = null;
@@ -248,7 +231,6 @@ public class ParentController implements Initializable {
 
                                     nodeBox.setText(newNode.getNodes() + " nodes connected.");
                                 }
-                                System.out.println("SYNC STATUS: " + newNode.getSync());
                                 if (newNode.getSync() == null || newNode.getBlock() == null) {
                                     overviewController.setSyncLabelVisibility(true);
                                     syncBox.setText("No QRL node detected. Please restart node and check existing connections.");
@@ -280,19 +262,6 @@ public class ParentController implements Initializable {
                                         syncBox.setText("QRL blockchain synced. Current blockheight #" + newNode.getBlock() + ".");
                                     }
                                 }
-
-                                /*
-                                uptimeLabel.setText(newNode.getUptime());
-                                nodesLabel.setText(newNode.getNodes());
-                                stakingLabel.setText(newNode.getStaking());
-                                syncLabel.setText(newNode.getSync());
-                                walletBalance.setText(newNode.getBalance());
-                                 */
- /*
-                                if (walletAddress.getText() == null || walletAddress.getText() == "Unavailable" || walletAddress.getText().equals("")) {
-                                    walletAddress.setText(newNode.getAddress());
-                                }
-                                 */
                             });
                             
                             overviewController.updateCoinbaseTX(QRLUSDPrice, QRLBTCPrice);
@@ -315,6 +284,26 @@ public class ParentController implements Initializable {
          */
         backgroundThread.restart();
 
+    }
+    
+    @FXML
+    private void displayNodesMessage(MouseEvent event) {
+        nodeBox.setVisible(true);
+    }
+
+    @FXML
+    private void hideNodesMessage(MouseEvent event) {
+        nodeBox.setVisible(false);
+    }
+
+    @FXML
+    private void displaySyncMessage(MouseEvent event) {
+        syncBox.setVisible(true);
+    }
+
+    @FXML
+    private void hideSyncMessage(MouseEvent event) {
+        syncBox.setVisible(false);
     }
 
     @FXML
@@ -406,8 +395,6 @@ public class ParentController implements Initializable {
                         dateLabel.setVisible(true);
                         overviewScreen.getChildren().add(dateLabel);
 
-                        System.out.println("HASHMAP KEY: " + entry.getKey());
-
                         List<Transaction> tempList = entry.getValue();
 
                         for (Transaction t : tempList) {
@@ -450,13 +437,11 @@ public class ParentController implements Initializable {
                             newPane.setVisible(true);
                             overviewScreen.getChildren().add(newPane);
 
-                            System.out.println(t.getTimeProperty().get());
                             layoutY += layoutBuffer + 35;
                         }
                     }
 
                     addedTransactions = true;
-                    System.out.println("TRANSACTIONS HAVE BEEN DISPLAYED!!!");
                 } catch (Exception e) {
                     System.out.println("Issue displaying transactions list...");
                     e.printStackTrace();
@@ -548,7 +533,7 @@ public class ParentController implements Initializable {
                 }
             }
         });
-
+        
         exec.submit(transactionTask);
          */
     }
@@ -564,12 +549,6 @@ public class ParentController implements Initializable {
         System.exit(-1);
     }
 
-    private ExecutorService exec = Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r);
-        t.setDaemon(true);
-        return t;
-    });
-
     //@Override
     public void stop() {
         exec.shutdownNow();
@@ -580,7 +559,7 @@ public class ParentController implements Initializable {
         return new Task<Void>() {
             @Override
             public Void call() throws Exception {
-                System.out.println("Updating Info...");
+                //System.out.println("Updating Info...");
                 newNode.updateInfo();
                 return null;
             }
@@ -592,7 +571,7 @@ public class ParentController implements Initializable {
         return new Task<Void>() {
             @Override
             public Void call() throws Exception {
-                System.out.println("Updating Block...");
+                //System.out.println("Updating Block...");
                 newNode.updateBlock();
                 return null;
             }
@@ -604,7 +583,7 @@ public class ParentController implements Initializable {
         return new Task<Transaction[]>() {
             @Override
             public Transaction[] call() throws Exception {
-                System.out.println("Updating Transactions...");
+                //System.out.println("Updating Transactions...");
                 newNode.updateTransactions();
                 //String[][] transactions = null;
                 //transactions = newNode.getTransactions();
@@ -625,36 +604,22 @@ public class ParentController implements Initializable {
         return new Task<Void>() {
             @Override
             public Void call() throws Exception {
-                System.out.println("Updating Wallet...");
+                //System.out.println("Updating Wallet...");
                 newNode.updateWallet();
                 return null;
             }
         };
     }
 
-    private Task<Void> sendQRLTask() {
+    public Task<String[]> sendQRLTask(String fromAddress, String sendAddress, String sendAmount) {
         final int taskNumber = taskCount.incrementAndGet();
-        return new Task<Void>() {
+        return new Task<String[]>() {
             @Override
-            public Void call() throws Exception {
+            public String[] call() throws Exception {
                 //PERFORM SENDING OPERATION HERE
-                /*
-                String fromAddress = "0";
-                
-                String sendAddress = sendField.getText();
-                String sendAmount = amountField.getText();
 
                 String[] responses = newNode.sendQRL(fromAddress, sendAddress, sendAmount);
-                Platform.runLater(() -> {
-                    txidArea.setVisible(true);
-                    msgArea.setVisible(true);
-                    txidLabel.setVisible(true);
-                    msgLabel.setVisible(true);
-                    txidArea.setText(responses[1]);
-                    msgArea.setText(responses[3]);
-                });
-                 */
-                return null;
+                return responses;
             }
         };
     }
@@ -690,12 +655,12 @@ public class ParentController implements Initializable {
     @FXML
     void setColour(JFXButton button) {
         button.setStyle("");
-        button.setStyle("-fx-background-color: #4a5474");
+        button.setStyle("-fx-background-color: #303d66");
     }
 
     @FXML
     void resetColour(JFXButton button) {
         button.setStyle("");
-        button.setStyle("-fx-background-color:  #1D2951");
+        button.setStyle("-fx-background-color:  #1D2951; -fx-opacity: 50%");
     }
 }

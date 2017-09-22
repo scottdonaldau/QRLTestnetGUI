@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
@@ -15,72 +16,117 @@
     <children>
         <Pane layoutX="-2.0" prefHeight="669.0" prefWidth="250.0" style="-fx-background-color: #1D2951;">
             <children>
-                <JFXButton fx:id="overviewButton" alignment="CENTER" layoutY="120.0" onMouseClicked="#overviewClicked" prefHeight="45.0" prefWidth="250.0" text="OVERVIEW        " textFill="WHITE">
+                <JFXButton fx:id="overviewButton" alignment="BASELINE_LEFT" graphicTextGap="40.0" layoutY="120.0" onMouseClicked="#overviewClicked" prefHeight="45.0" prefWidth="250.0" text="OVERVIEW" textFill="WHITE">
                     <font>
                         <Font name="Titillium Web SemiBold" size="18.0" />
                     </font>
+               <graphic>
+                      <ImageView scaleX="0.85" scaleY="0.85">
+                          <image>
+                              <Image url="@../images/home.png" />
+                          </image>
+                          <viewport>
+                              <Rectangle2D />
+                          </viewport>
+                      </ImageView>
+               </graphic>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
                 </JFXButton>
-                <JFXButton fx:id="sendButton" alignment="CENTER" layoutY="210.0" onMouseClicked="#sendClicked" prefHeight="45.0" prefWidth="250.0" text="SEND                 " textFill="WHITE">
+                <JFXButton fx:id="walletButton" alignment="BASELINE_LEFT" graphicTextGap="40.0" layoutY="165.0" onMouseClicked="#walletClicked" prefHeight="45.0" prefWidth="250.0" text="WALLET" textFill="WHITE">
                     <font>
                         <Font name="Titillium Web SemiBold" size="18.0" />
                     </font>
+               <graphic>
+                      <ImageView scaleX="0.85" scaleY="0.85">
+                          <image>
+                              <Image url="@../images/wallet.png" />
+                          </image>
+                      </ImageView>
+               </graphic>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
                 </JFXButton>
-                <JFXButton fx:id="transactionsButton" alignment="CENTER" layoutY="300.0" onMouseClicked="#transactionsClicked" prefHeight="45.0" prefWidth="250.0" text="   TRANSACTIONS" textFill="WHITE">
+                <JFXButton fx:id="sendButton" alignment="BASELINE_LEFT" graphicTextGap="40.0" layoutY="210.0" onMouseClicked="#sendClicked" prefHeight="45.0" prefWidth="250.0" text="SEND" textFill="WHITE">
                     <font>
                         <Font name="Titillium Web SemiBold" size="18.0" />
                     </font>
+               <graphic>
+                      <ImageView scaleX="0.85" scaleY="0.85">
+                          <image>
+                              <Image url="@../images/send.png" />
+                          </image>
+                      </ImageView>
+               </graphic>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
                 </JFXButton>
-                <JFXButton fx:id="exitButton" layoutY="601.0" onMouseClicked="#exitClicked" prefHeight="45.0" prefWidth="250.0" style="-: ;" text="EXIT                  " textFill="WHITE">
+                <JFXButton fx:id="receiveButton" alignment="BASELINE_LEFT" graphicTextGap="40.0" layoutY="255.0" onMouseClicked="#receiveClicked" prefHeight="45.0" prefWidth="250.0" text="RECEIVE" textFill="WHITE">
                     <font>
                         <Font name="Titillium Web SemiBold" size="18.0" />
                     </font>
+               <graphic>
+                      <ImageView scaleX="0.85" scaleY="0.85">
+                          <image>
+                              <Image url="@../images/receive.png" />
+                          </image>
+                      </ImageView>
+               </graphic>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
                 </JFXButton>
-                <JFXButton fx:id="aboutButton" layoutY="556.0" onMouseClicked="#aboutClicked" prefHeight="45.0" prefWidth="250.0" text="ABOUT             " textFill="WHITE">
+                <JFXButton fx:id="transactionsButton" alignment="BASELINE_LEFT" graphicTextGap="40.0" layoutY="300.0" onMouseClicked="#transactionsClicked" prefHeight="45.0" prefWidth="250.0" text="TRANSACTIONS" textFill="WHITE">
                     <font>
                         <Font name="Titillium Web SemiBold" size="18.0" />
                     </font>
+               <graphic>
+                      <ImageView scaleX="0.85" scaleY="0.85">
+                          <image>
+                              <Image url="@../images/transactions.png" />
+                          </image>
+                      </ImageView>
+               </graphic>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
                 </JFXButton>
-                <ImageView layoutX="19.0" layoutY="310.0" scaleX="0.85" scaleY="0.85">
-                    <image>
-                        <Image url="@../images/transactions.png" />
-                    </image>
-                </ImageView>
-                <ImageView layoutX="19.0" layoutY="611.0" scaleX="0.85" scaleY="0.85">
-                    <image>
-                        <Image url="@../images/exit.png" />
-                    </image>
-                </ImageView>
-                <ImageView layoutX="19.0" layoutY="566.0" scaleX="0.85" scaleY="0.85">
-                    <image>
-                        <Image url="@../images/about.png" />
-                    </image>
-                </ImageView>
-                <ImageView layoutX="19.0" layoutY="228.0" scaleX="0.85" scaleY="0.85">
-                    <image>
-                        <Image url="@../images/send.png" />
-                    </image>
-                </ImageView>
+                <JFXButton fx:id="exitButton" alignment="BASELINE_LEFT" graphicTextGap="40.0" layoutY="601.0" onMouseClicked="#exitClicked" prefHeight="45.0" prefWidth="250.0" style="-: ;" text="EXIT                  " textFill="WHITE">
+                    <font>
+                        <Font name="Titillium Web SemiBold" size="18.0" />
+                    </font>
+               <graphic>
+                      <ImageView scaleX="0.85" scaleY="0.85">
+                          <image>
+                              <Image url="@../images/exit.png" />
+                          </image>
+                      </ImageView>
+               </graphic>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
+                </JFXButton>
+                <JFXButton fx:id="aboutButton" alignment="BASELINE_LEFT" graphicTextGap="40.0" layoutY="556.0" onMouseClicked="#aboutClicked" prefHeight="45.0" prefWidth="250.0" text="ABOUT" textFill="WHITE">
+                    <font>
+                        <Font name="Titillium Web SemiBold" size="18.0" />
+                    </font>
+               <graphic>
+                      <ImageView scaleX="0.85" scaleY="0.85">
+                          <image>
+                              <Image url="@../images/about.png" />
+                          </image>
+                      </ImageView>
+               </graphic>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
+                </JFXButton>
                 <ImageView fitHeight="64.0" fitWidth="184.0" layoutX="36.0" layoutY="24.0">
                     <image>
                         <Image url="@../images/headerImage.png" />
-                    </image>
-                </ImageView>
-                <ImageView layoutX="19.0" layoutY="130.0" scaleX="0.85" scaleY="0.85">
-                    <image>
-                        <Image url="@../images/home.png" />
-                    </image>
-                    <viewport>
-                        <Rectangle2D />
-                    </viewport>
-                </ImageView>
-                <JFXButton fx:id="receiveButton" alignment="CENTER" layoutY="255.0" onMouseClicked="#receiveClicked" prefHeight="45.0" prefWidth="250.0" text="RECEIVE           " textFill="WHITE">
-                    <font>
-                        <Font name="Titillium Web SemiBold" size="18.0" />
-                    </font>
-                </JFXButton>
-                <ImageView layoutX="22.0" layoutY="273.0" scaleX="0.85" scaleY="0.85">
-                    <image>
-                        <Image url="@../images/receive.png" />
                     </image>
                 </ImageView>
                 <Label fx:id="QRLVersion" alignment="CENTER" layoutY="646.0" prefHeight="19.0" prefWidth="250.0" textFill="#c9c9c9">
@@ -88,16 +134,6 @@
                         <Font name="Titillium Web Regular" size="12.0" />
                     </font>
                 </Label>
-                <JFXButton fx:id="walletButton" alignment="CENTER" layoutY="165.0" onMouseClicked="#walletClicked" prefHeight="45.0" prefWidth="250.0" text="WALLET             " textFill="WHITE">
-                    <font>
-                        <Font name="Titillium Web SemiBold" size="18.0" />
-                    </font>
-                </JFXButton>
-                <ImageView layoutX="19.0" layoutY="175.0" scaleX="0.85" scaleY="0.85">
-                    <image>
-                        <Image url="@../images/wallet.png" />
-                    </image>
-                </ImageView>
             </children>
         </Pane>
         <Pane layoutX="250.0" prefHeight="101.0" prefWidth="831.0" style="-fx-background-color: ffffff;">
@@ -150,7 +186,7 @@
                 <Image url="@../images/error.png" />
             </image>
         </ImageView>
-        <Label id="nodeStatusPopup" fx:id="nodeBox" alignment="CENTER" contentDisplay="CENTER" layoutX="915.0" layoutY="580.0" prefHeight="50.0" prefWidth="122.0" stylesheets="@../css/style.css" text="0 nodes connected." textAlignment="CENTER" textFill="WHITE" visible="false">
+        <Label id="nodeStatusPopup" fx:id="nodeBox" alignment="CENTER" contentDisplay="CENTER" layoutX="915.0" layoutY="575.0" prefHeight="50.0" prefWidth="122.0" stylesheets="@../css/style.css" text="0 nodes connected." textAlignment="CENTER" textFill="WHITE" visible="false">
             <font>
                 <Font name="Titillium Web SemiBold" size="11.5" />
             </font>

@@ -117,7 +117,7 @@
             </Label>
             <Line endX="220.0" layoutX="21.0" layoutY="80.0" />
             <Line endX="220.0" layoutX="21.0" layoutY="148.0" />
-            <Label layoutX="163.0" layoutY="39.0" text="QRL">
+            <Label layoutX="182.0" layoutY="39.0" text="QRL">
                <font>
                   <Font name="Titillium Web SemiBold" size="25.0" />
                </font>
